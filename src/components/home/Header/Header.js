@@ -5,7 +5,6 @@ import { HiMenuAlt2 } from "react-icons/hi";
 import { motion } from "framer-motion";
 import logo1 from "../../../assets/logo/logo.png";
 import Image from "../../designLayouts/Image";
-import { navBarListRespon } from "../../../constants";
 import Flex from "../../designLayouts/Flex";
 import "./Header.css"
 import { IoReturnUpBack } from "react-icons/io5";
@@ -16,7 +15,6 @@ import { IoMdArrowDropdown, IoMdArrowDropup } from "react-icons/io";
 const Header = () => {
   const [showMenu, setShowMenu] = useState(false);
   const [sidenav, setSidenav] = useState(false);
-  const [showSpecialCategories, setShowSpecialCategories] = useState(false);
   const [showMealPlans, setShowMealPlans] = useState(false);
   const [showHealthyDiets, setShowHealthyDiets] = useState(false);
   const [showDietPlanForAge, setShowDietPlanForAge] = useState(false);
@@ -44,7 +42,7 @@ const Header = () => {
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setShowSpecialCategories(false);
+        setShowSPecialCateg(false);
         setShowMealPlans(false);
         setShowHealthyDiets(false);
         setShowDietPlanForAge(false);
@@ -68,7 +66,7 @@ const Header = () => {
     <div className="sticky top-0 z-50">
       <div className="bg-[#324c21] h-8 flex justify-between items-center ">
         <div className="flex-1 md:ml-52">
-          <p className="text-white font-semibold md:text-base sm:text-[10px] xs:text-[10px] text-center">" Nutritious Millets, Healthy Plans "</p>
+          <p className="text-white font-semibold md:text-base sm:text-[10px] xs:text-[10px] text-center"><span data-aos="zoom-in-right">"Nutritious Millets,</span><span data-aos="zoom-in-left">Healthy Plans"</span></p>
         </div>
         <div className="px-4 flex items-center">
           <p className="text-white sm:text-xs xs:text-[9px] lg:text-base font-semibold font-body2 cursor-pointer mr-2">English <span className="ml-1 font-serif"> | </span> </p>

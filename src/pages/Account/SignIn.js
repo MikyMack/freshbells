@@ -1,14 +1,16 @@
 import React, { useState } from "react";
 import { BsCheckCircleFill, BsArrowLeft } from "react-icons/bs";
 import { Link, useNavigate } from "react-router-dom";
-import { useDispatch } from 'react-redux';
-import { toast } from 'react-toastify';
+import { useDispatch, useSelector } from 'react-redux';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import logo from "../../assets/logo/logo.webp"
-import { LOGIN_ACTION } from "../../actions/AuthActions";  
+import { LOGIN_ACTION } from "../../actions/AuthActions";
 
 const SignIn = () => {
+  const isLoading = useSelector(state => state.auth.isLoading);
   const [formData, setFormData] = useState({
-    email: "", 
+    email: "",
     password: "",
   });
   const navigate = useNavigate();
@@ -23,6 +25,7 @@ const SignIn = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    dispatch({ type: 'SET_LOADING', payload: true });
     if (formData.email && formData.password) {
       try {
         const response = await LOGIN_ACTION(formData);
@@ -35,15 +38,19 @@ const SignIn = () => {
       } catch (error) {
         console.error('Login failed:', error);
         toast.error("Login failed. Enter valid details.");
+      } finally {
+        dispatch({ type: 'SET_LOADING', payload: false });
       }
     } else {
       toast.error("Please enter both username and password.");
+      dispatch({ type: 'SET_LOADING', payload: false });
     }
   };
 
 
   return (
     <div className="w-full h-screen flex items-center justify-center">
+      <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
       <div className="w-1/2 hidden lgl:inline-flex h-full text-primeColor">
         <div className="w-[450px] h-full bg-[#bbe6b9] px-10 flex flex-col gap-6 justify-center">
           <Link to="/">
@@ -113,7 +120,7 @@ const SignIn = () => {
       <div className="w-full lgl:w-1/2 h-full">
         <form className="w-full lgl:w-[450px] h-screen flex items-center justify-center" onSubmit={handleSubmit}>
           <div className="px-6 py-4 w-full h-[90%] flex flex-col justify-center overflow-y-scroll scrollbar-thin scrollbar-thumb-primeColor">
-         
+
             <h1 className="font-titleFont underline underline-offset-4 decoration-[1px] font-semibold text-3xl mdl:text-4xl mb-4">
               Sign in
             </h1>
@@ -131,8 +138,8 @@ const SignIn = () => {
                   type="text"
                   placeholder="john@gmail.com or 1234567890"
                 />
-              
-              </div> 
+
+              </div>
 
               {/* Password */}
               <div className="flex flex-col gap-.5">
@@ -147,14 +154,14 @@ const SignIn = () => {
                   type="password"
                   placeholder="enter password"
                 />
-            
+
               </div>
 
               <button
                 type="submit"
                 className="bg-primeColor hover:bg-black text-gray-200 hover:text-white cursor-pointer w-full text-base font-medium h-10 rounded-md duration-300"
               >
-                Sign In
+                {isLoading ? 'Loading...' : 'Sign In'}
               </button>
               <Link to="/forgot-password" className="text-sm text-center font-titleFont font-medium hover:text-blue-600 duration-300">
                 Forgot Password?

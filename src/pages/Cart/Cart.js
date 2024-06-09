@@ -1,136 +1,144 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import React, { useEffect } from "react";
 import Breadcrumbs from "../../components/pageProps/Breadcrumbs";
-import { resetCart } from "../../redux/orebiSlice";
-import { emptyCart } from "../../assets/images/index";
-import ItemCard from "./ItemCard";
 import Header from "../../components/home/Header/Header";
 import HeaderBottom from "../../components/home/Header/HeaderBottom";
 import FooterBottom from "../../components/home/Footer/FooterBottom";
 import Footer from "../../components/home/Footer/Footer";
+import { data } from "../../constants/index"
+import { MdCurrencyRupee } from "react-icons/md";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useDispatch, useSelector } from "react-redux";
+import { IoIosArrowRoundBack } from "react-icons/io";
+import { Link } from "react-router-dom";
+import { addToCart, clearCart, decreaseCart, getToatals, removeFromCart } from "../../redux/cartSlice";
+import imag from "../../assets/images/emptyCart.png"
+import { FaPlus, FaMinus } from "react-icons/fa6";
 
 const Cart = () => {
-  const dispatch = useDispatch();
-  const products = useSelector((state) => state.orebiReducer.products);
-  const [totalAmt, setTotalAmt] = useState("");
-  const [shippingCharge, setShippingCharge] = useState("");
-  useEffect(() => {
-    let price = 0;
-    products.map((item) => {
-      price += item.price * item.quantity;
-      return price;
-    });
-    setTotalAmt(price);
-  }, [products]);
-  useEffect(() => {
-    if (totalAmt <= 200) {
-      setShippingCharge(30);
-    } else if (totalAmt <= 400) {
-      setShippingCharge(25);
-    } else if (totalAmt > 401) {
-      setShippingCharge(20);
-    }
-  }, [totalAmt]);
+  const cart = useSelector(state => state.cart);
+  const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
+  const dispatch = useDispatch()
+
+  useEffect(()=>{
+    dispatch(getToatals())
+  },[cart,dispatch])
+  const handleRemoveFromCart = (cartItem) => {
+    dispatch(removeFromCart(cartItem));
+  }
+  const handleDecrease = (cartItem) => {
+    dispatch(decreaseCart(cartItem));
+  }
+  const handleIncrease=(cartItem)=>{
+     dispatch(addToCart(cartItem));
+  }
+  const handleClearCart=()=>{
+    dispatch(clearCart())
+  }
+
   return (
     <>
-     <Header />
-    <HeaderBottom />
-    <div className=" mx-auto px-4">
-      <Breadcrumbs title="My Cart" />
-      {products.length > 0 ? (
-        <div className="pb-20">
-          <div className="w-full h-20 bg-lightText text-primeColor hidden lgl:grid grid-cols-5 place-content-center px-6 text-lg font-titleFont font-semibold">
-            <h2 className="col-span-2">Product</h2>
-     
-            <h2>Price</h2>
-            <h2>Quantity</h2>
-            <h2>Sub Total</h2>
+      <Header />
+      <HeaderBottom />
+      <ToastContainer />
+      <div className="bg-[#EFFDEC]">
+        <div className="container mx-auto px-4">
+          <div className="py-4">
+            <Breadcrumbs title="My Cart" />
           </div>
-          <div className="mt-5">
-            {products.map((item) => (
-              <div key={item._id}>
-                <ItemCard item={item} />
+          {cart.cartItems.length === 0 ? (
+            <div className="flex flex-col justify-center items-center  text-center px-4">
+              <div className="mb-2">
+               <img className="h-auto max-w-xs md:max-w-sm lg:max-w-lg mx-auto mb-5" src={imag} alt="Empty Cart" /> 
+               <p className="text-lg md:text-xl xs:text-lg lg:text-2xl mt-4">Your cart is empty. Start shopping now!</p>
+               </div>
+               <Link to="/home" className="mt-5 mb-20 bg-blue-100 hover:bg-blue-400 hover:text-white text-primeColor font-bold py-2 px-4 rounded">
+                <button>Start Shopping</button> 
+               </Link>
+            </div>
+          ) :
+            <div className="flex flex-col md:flex-row items-start justify-center gap-4">
+              <div className="w-full md:w-3/4 bg-white mb-10 rounded-lg">
+                <div className="bg-[#bbe6b9] py-4">
+                  <h1 className="md:text-2xl  font-bold text-center">You have<span className="text-red-500"> {cart.cartTotalQuantity}</span> items in your cart</h1>
+                </div>
+                {cart.cartItems?.map((items, index) => (
+                  <React.Fragment key={items._id}>
+                    <div className="flex flex-col  items-center hover:bg-red-50 justify-center md:flex-row gap-4">
+                      <div className="md:w-full flex md:flex-row xs:flex-col items-center">
+                        <div className="flex items-center justify-center">
+                          <img className="w-1/2 object-contain" src={items.img} alt="Product img" />
+                        </div>
+                        <div className="flex flex-col items-center justify-center md:w-1/2 xs:w-full space-y-1">
+                          <p className="hover:text-gray-500 md:text-xl xs:text-sm text-gray-500"><span className="md:text-xl xs:text-lg font-normal text-primeColor">{items.productName}</span></p>
+                          <p className="hover:text-gray-500 md:text-xl xs:text-sm text-gray-500">Category : <span className="font-normal text-xl text-primeColor">Spices</span></p>
+                          <p className="hover:text-gray-500 md:text-xl xs:text-sm text-gray-500">Quantity :   <select className="order-1 mt-1 hover:bg-gray-400 font-normal font-body2 text-black hover:text-white">
+                    {
+                      items.quantity.map((quantity, index) => (
+                        <option key={index} value={`${quantity}g`} className="text-black bg-white md:text-xl xs:text-lg font-medium">{quantity}g</option>
+                      ))
+                    }
+                  </select></p>
+                          <div className={`md:text-lg xs:text-base ${items.stock === 0 || (items.stock > 0 && items.stock < 10) ? 'text-red-500' : 'text-green-500'}`}>
+                            {items.stock === 0 ? "Out of Stock" : items.stock < 10 ? `Only ${items.stock} items left` : `${items.stock} items in stock`}
+                          </div>
+                          <button onClick={() => handleRemoveFromCart(items)} className="text-red-600 hover:text-red-500 md:text-lg xs:text-base">Remove item</button>
+                        </div>
+                        <div className="md:w-1/2 flex flex-col items-center justify-center xs:mt-3">
+                          <div>
+                            <button onClick={() => handleDecrease(items)} className="px-2 py-2 text-lg bg-gray-500 hover:bg-red-400 text-white "> <span><FaMinus /></span> </button>
+                            <span className="px-4 text-lg  bg-gray-200">{items.cartQuantity}</span>
+                            <button onClick={()=>handleIncrease(items)} className="px-2 py-2 text-lg bg-gray-500 hover:bg-green-400 text-white "><span><FaPlus /></span></button>
+                          </div>
+                          <div className="mt-4 mb-5">
+                            <p className="font-semibold flex items-center hover:text-gray-500 md:text-xl xs:text-sm">Price : <span className="mt-[2px]"><MdCurrencyRupee /></span>{items.price * items.cartQuantity}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    {index !== data.length - 1 && <hr />}
+                  </React.Fragment>
+                ))
+                }
               </div>
-            ))}
-          </div>
-
-          <button
-            onClick={() => dispatch(resetCart())}
-            className="py-2 px-10 bg-red-500 text-white font-semibold uppercase mb-4 hover:bg-red-700 duration-300"
-          >
-            Reset cart
-          </button>
-
-          <div className="max-w-7xl gap-4 flex justify-end mt-4">
-            <div className="w-96 flex flex-col gap-4">
-              <h1 className="text-2xl font-semibold text-right">Cart totals</h1>
-              <div>
-                <p className="flex items-center justify-between border-[1px] border-gray-400 border-b-0 py-1.5 text-lg px-4 font-medium">
-                  Subtotal
-                  <span className="font-semibold tracking-wide font-titleFont">
-                    ${totalAmt}
-                  </span>
-                </p>
-                <p className="flex items-center justify-between border-[1px] border-gray-400 border-b-0 py-1.5 text-lg px-4 font-medium">
-                  Shipping Charge
-                  <span className="font-semibold tracking-wide font-titleFont">
-                    ${shippingCharge}
-                  </span>
-                </p>
-                <p className="flex items-center justify-between border-[1px] border-gray-400 py-1.5 text-lg px-4 font-medium">
-                  Total
-                  <span className="font-bold tracking-wide text-lg font-titleFont">
-                    ${totalAmt + shippingCharge}
-                  </span>
-                </p>
-              </div>
-              <div className="flex justify-end">
-                <Link to="/paymentgateway">
-                  <button className="w-52 h-10 bg-primeColor text-white hover:bg-black duration-300">
-                    Proceed to Checkout
-                  </button>
-                </Link>
+              <div className="flex flex-col w-full md:w-1/2 bg-white rounded-lg mb-10">
+                <div className="bg-[#bbe6b9] py-4">
+                  <h1 className="text-2xl font-bold text-center">Summary</h1>
+                </div>
+                <div className="flex justify-between p-3">
+                  <p className="flex-1 font-medium xs:text-sm md:text-xl">Products Quantity:</p>
+                  <p className="flex-1 text-right font-medium">{cart.cartTotalQuantity}</p>
+                </div>
+                <div className="flex justify-between p-3">
+                  <p className="flex-1 font-medium md:text-xl xs:text-sm">Total amount:</p>
+                  <p className="flex items-center text-right md:text-[20px] font-medium"><span className="md:mt-[2px] xs:mt-[3px] md:text-base xs:text-sm"><MdCurrencyRupee /></span>{cart.cartTotalAmount}</p>
+                </div>
+                <div className="flex flex-col items-center">
+                  {isAuthenticated ? (
+                    <button className="bg-black hover:bg-primeColor font-medium text-white px-4 py-2 rounded mt-4 w-full ">Proceed to Checkout</button>
+                  ) : (
+                    <Link to="/signin" className="w-full">
+                      <button className="bg-black hover:bg-primeColor font-medium text-white px-full py-2 rounded mt-4 w-full">Sign in to Checkout</button>
+                    </Link>
+                  )}
+                  <div className="flex justify-between items-center py-3 w-full">
+                    <button onClick={()=>handleClearCart()} className="bg-red-600 py-1 px-2 rounded-md text-white font-medium hover:bg-red-500 ml-2">Clear Cart</button>
+                    <Link to="/home" className="text-center">
+                      <button className="flex items-center justify-center hover:text-blue-600 mr-2"><span className="mt-[2px] pr-1"><IoIosArrowRoundBack /></span>Continue Shopping</button>
+                    </Link>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+          }
         </div>
-      ) : (
-        <motion.div
-          initial={{ y: 30, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.4 }}
-          className="flex flex-col mdl:flex-row justify-center items-center gap-4 pb-20"
-        >
-          <div>
-            <img
-              className="w-80 rounded-lg p-4 mx-auto"
-              src={emptyCart}
-              alt="emptyCart"
-            />
-          </div>
-          <div className="max-w-[500px] p-4 py-8 bg-white flex gap-4 flex-col items-center rounded-md shadow-lg">
-            <h1 className="font-titleFont text-xl font-bold uppercase">
-              Your Cart feels lonely.
-            </h1>
-            <p className="text-sm text-center px-10 -mt-2">
-              Your Shopping cart lives to serve. Give it purpose - fill it with
-              books, electronics, videos, etc. and make it happy.
-            </p>
-            <Link to="/shop">
-              <button className="bg-primeColor rounded-md cursor-pointer hover:bg-black active:bg-gray-900 px-8 py-2 font-titleFont font-semibold text-lg text-gray-200 hover:text-white duration-300">
-                Continue Shopping
-              </button>
-            </Link>
-          </div>
-        </motion.div>
-      )} 
-    </div>
-    <Footer />
-  <FooterBottom />
+      </div>
+      <Footer />
+      <FooterBottom />
     </>
   );
 };
 
 export default Cart;
+
+

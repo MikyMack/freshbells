@@ -72,13 +72,13 @@ const Footer = () => {
               {/* social links */}
               <div className="w-full">
                 <div className="flex justify-center items-center gap-3 mt-6">
-                  <a href="#">
+                  <a href="/">
                     <FaInstagram className="text-3xl hover:text-purple-600" />
                   </a>
-                  <a href="#">
+                  <a href="/">
                     <FaFacebook className="text-3xl hover:text-blue-600" />
                   </a>
-                  <a href="#">
+                  <a href="/">
                     <FaLinkedin className="text-3xl hover:text-blue-600" />
                   </a>
                 </div>

@@ -5,8 +5,11 @@ import logo from "../../assets/logo/logo.webp"
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // Ensure CSS is imported to fix display issues
 import {USER_LOGIN} from "../../actions/AuthActions"
+import { useDispatch, useSelector } from "react-redux";
 
 const SignUp = () => {
+  const isLoading = useSelector(state => state.auth.isLoading);
+  const dispatch=useDispatch()
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
@@ -26,12 +29,15 @@ const SignUp = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    dispatch({ type: 'SET_LOADING', payload: true });
     if (!formData.name || !formData.email || !formData.phone || !formData.password || !formData.confirm_password) {
       toast.error('Please fill in all fields');
+      dispatch({ type: 'SET_LOADING', payload: false });
       return;
     }
     if (formData.password !== formData.confirm_password) {
       toast.error('Passwords do not match');
+      dispatch({ type: 'SET_LOADING', payload: false });
       return;
     }
     try {
@@ -40,14 +46,12 @@ const SignUp = () => {
         toast.success('Registration successful');  
         navigate("/signin");
       } else {
-        if (response.status === false) {
-          toast.error("Email is already taken");
-        } else {
-          toast.error('Email or Phonenumber is already registered');
-        }
+        toast.error(response.message || 'An error occurred during registration');
       }
     } catch (error) {
-      toast.error('Email is already registered');
+      toast.error(error.message || 'Registration failed');
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
     }
   };
 
@@ -220,7 +224,7 @@ const SignUp = () => {
                       : "bg-gray-500 hover:bg-gray-500 hover:text-gray-200 cursor-not-allowed"
                   } w-full text-gray-200 text-base font-medium h-10 rounded-md hover:text-white duration-300`}
                 >
-                  Create Account
+                 {isLoading ?"Loading...":" Create Account"}
                 </button>
                 <p className="text-sm text-center font-titleFont font-medium">
                   Already have an Account?{" "}

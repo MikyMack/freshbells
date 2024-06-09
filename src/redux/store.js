@@ -1,8 +1,9 @@
 // redux/store.js
-import { createStore, applyMiddleware } from 'redux';
-import { composeWithDevTools } from 'redux-devtools-extension';
+import { combineReducers } from 'redux';
+import { configureStore } from '@reduxjs/toolkit';
 import logger from 'redux-logger';
-
+import cartReducer from './cartSlice';
+import productReducer from './productSlice';
 
 const initialState = {
   isAuthenticated: localStorage.getItem('isAuthenticated') === 'true',
@@ -18,15 +19,22 @@ function authReducer(state = initialState, action) {
       localStorage.setItem('isAuthenticated', 'false');
       return { ...state, isAuthenticated: false };
     case 'SET_LOADING':
+      console.log('SET_LOADING action dispatched with payload:', action.payload);
       return { ...state, isLoading: action.payload };
     default:
       return state;
   }
 }
 
-const store = createStore(
-  authReducer,
-  composeWithDevTools(applyMiddleware(logger))
-);
+const rootReducer = combineReducers({
+  auth: authReducer,
+  cart: cartReducer,
+  product:productReducer,
+});
+
+const store = configureStore({
+  reducer: rootReducer,
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(logger),
+});
 
 export default store;

@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.00d9a76d.css",
-    "main.js": "/static/js/main.86cd158b.js",
+    "main.css": "/static/css/main.37f6974a.css",
+    "main.js": "/static/js/main.1f1f9d00.js",
     "static/media/weightgain_n.jpg": "/static/media/weightgain_n.8dd86684946a0fa6ffb5.jpg",
     "static/media/weightgain_s.jpg": "/static/media/weightgain_s.61a0d31be5d77041986d.jpg",
     "static/media/trees2.png": "/static/media/trees2.5c7cea430f918f73da40.png",
@@ -35,13 +35,11 @@
     "static/media/dia health mix.png": "/static/media/dia health mix.b0c61a335726f79e68a9.png",
     "static/media/istant ragi dosamix.png": "/static/media/istant ragi dosamix.42a82edb7fd3892af394.png",
     "static/media/lactose.png": "/static/media/lactose.32025cd127654325b63d.png",
-    "static/media/cinamon.png": "/static/media/cinamon.903317b091be0792c138.png",
     "static/media/footer.jpg": "/static/media/footer.c3021522d5da41a26052.jpg",
     "static/media/instant pearl dosa mix.png": "/static/media/instant pearl dosa mix.5b48442f87ba9271ab64.png",
     "static/media/newbg1.jpg": "/static/media/newbg1.acec08e965dddbc7f045.jpg",
     "static/media/instant multicmillet dosa.png": "/static/media/instant multicmillet dosa.2ff5977a6e9d64d7cd4e.png",
     "static/media/school.png": "/static/media/school.93899214408d46ba9d81.png",
-    "static/media/garlic01.jpg": "/static/media/garlic01.60bfadbed69a49ecf5d1.jpg",
     "static/media/dr.png": "/static/media/dr.ebfc7a9d7a316a8a13c6.png",
     "static/media/cloves.png": "/static/media/cloves.c0fa2254d35a61ab1b03.png",
     "static/media/mother.jpg": "/static/media/mother.d7be28dda563ff51d83e.jpg",
@@ -57,8 +55,6 @@
     "static/media/dryfruits.jpg": "/static/media/dryfruits.049bf050a94f14188573.jpg",
     "static/media/pcod.jpg": "/static/media/pcod.be50fcdb8f1a6f432e6a.jpg",
     "static/media/logo.webp": "/static/media/logo.0f36accc06f4baa98818.webp",
-    "static/media/payment.png": "/static/media/payment.3e00cc601c9e7fc1e7d3.png",
-    "static/media/productOfTheYear.webp": "/static/media/productOfTheYear.2c30f10b51873bab4630.webp",
     "static/media/tea-coffee.webp": "/static/media/tea-coffee.b7dc7fd3811ac7128c90.webp",
     "static/media/spices.webp": "/static/media/spices.8f9b50567907d398ae93.webp",
     "static/media/nuts.webp": "/static/media/nuts.9e08e15b035c43d08649.webp",
@@ -76,11 +72,11 @@
     "static/media/slick.ttf": "/static/media/slick.c94f7671dcc99dce43e2.ttf",
     "static/media/slick.woff": "/static/media/slick.295183786cd8a1389865.woff",
     "index.html": "/index.html",
-    "main.00d9a76d.css.map": "/static/css/main.00d9a76d.css.map",
-    "main.86cd158b.js.map": "/static/js/main.86cd158b.js.map"
+    "main.37f6974a.css.map": "/static/css/main.37f6974a.css.map",
+    "main.1f1f9d00.js.map": "/static/js/main.1f1f9d00.js.map"
   },
   "entrypoints": [
-    "static/css/main.00d9a76d.css",
-    "static/js/main.86cd158b.js"
+    "static/css/main.37f6974a.css",
+    "static/js/main.1f1f9d00.js"
   ]
 }

@@ -19,9 +19,9 @@ module.exports = {
       fontFamily: {
         bodyFont: ["DM Sans", "sans-serif"],
         titleFont: ["Poppins", "sans-serif"],
-        body: ["Teko"],
-        body1:["Ubuntu"],
-        body3:["Italiana"],
+        body: ["Abril Fatface"],
+        body1:["Abril Fatface"],
+        body3:["Abril Fatface"],
         body2:["Abril Fatface"], 
       },
       colors: {

@@ -4,8 +4,9 @@ import { RiShoppingCart2Fill } from "react-icons/ri";
 import { MdSwitchAccount } from "react-icons/md";
 import { useSelector } from "react-redux";
 
+
 const SpecialCase = () => {
-  const products = useSelector((state) => state.orebiReducer.products);
+  const {cartTotalQuantity}=useSelector(state=>state.cart);
   return (
     <div className="fixed top-80 right-2 z-50 hidden md:flex flex-col gap-2">
       <Link to="/profile">
@@ -25,12 +26,12 @@ const SpecialCase = () => {
 
             <RiShoppingCart2Fill className="text-primeColor text-2xl -translate-x-3 group-hover:translate-x-12 transition-transform duration-200" />
           </div>
-          <p className="text-xs font-semibold font-titleFont">Buy Now</p>
-          {products.length > 0 && (
-            <p className="absolute top-1 right-2 bg-primeColor text-white text-xs w-4 h-4 rounded-full flex items-center justify-center font-semibold">
-              {products.length}
+          <p className="text-xs font-semibold font-titleFont">Cart</p>
+
+            <p className="absolute top-1 right-3 bg-lightText text-white text-xs w-4 h-4 rounded-full flex items-center justify-center font-semibold">
+            {cartTotalQuantity}
             </p>
-          )}
+       
         </div>
       </Link>
     </div>

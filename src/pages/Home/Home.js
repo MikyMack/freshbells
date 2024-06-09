@@ -16,9 +16,14 @@ import FooterBottom from "../../components/home/Footer/FooterBottom";
 import HomeNutritionForm from "../../components/SpecialCase/HomeNutritionForm";
 import { useCallback } from 'react';
 import Loader from "../../components/Loader/Loader"
+import { ToastContainer} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import SpecialCase from "../../components/SpecialCase/SpecialCase"
+import {Home_Details} from "../../actions/HomeActions"
+
 
 const Home = () => {
-  const { isLoading } = useSelector(state => state);
+  const isLoading = useSelector(state => state.auth.isLoading);
   const dispatch = useDispatch();
 
   const [showNutritionForm, setShowNutritionForm] = useState(false);
@@ -42,7 +47,7 @@ const Home = () => {
     dispatch({ type: 'SET_LOADING', payload: true });
     const timer = setTimeout(() => {
       dispatch({ type: 'SET_LOADING', payload: false });
-    }, 3000); 
+    }, 1500); 
 
     return () => clearTimeout(timer);
   }, [dispatch]);
@@ -62,8 +67,10 @@ const Home = () => {
       )}
       <Header />
       <HeaderBottom />
+      <ToastContainer />
       <div className="w-full mx-auto overflow-x-hidden scroll-smooth bg-[#EFFDEC]">
         <Banner />
+        <SpecialCase />
         <BannerBottom />
         <div className="mx-auto px-4 mt-10">
           <NewArrivals />
@@ -84,3 +91,6 @@ const Home = () => {
 };
 
 export default Home;
+
+
+

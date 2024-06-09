@@ -31,6 +31,7 @@ import PCODdiet from '../pages/MealPlans/SpecialConditions/PCOD';
 import DiabetesMellitus from '../pages/MealPlans/SpecialConditions/DiabetesMellitus';
 import GlutenFreeDiet from '../pages/MealPlans/SpecialConditions/GlutenFreeDiet';
 import LactoseIntrolerent from '../pages/MealPlans/SpecialConditions/LactoseIntrolerent';
+import OtpPage from '../pages/Account/Otp';
 
 export default function MainRoutes() {
     const [showRoutes, setShowRoutes] = useState(false);
@@ -59,20 +60,19 @@ export default function MainRoutes() {
         <Routes>
             <Route element={<PublicRoutes />}>
                 <Route path="/signup" element={<SignUp />} />
-                <Route path="/signin" element={<SignIn />} /> 
-
+                <Route path="/signin" element={<SignIn />} />
+                <Route path="/otppage" element={<OtpPage />} />
+                <Route path="/cart" element={<Cart />} />
+                <Route path="/productDetails" element={<ProductDetails />} />
+                <Route path="/shop" element={<Shop />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/superfoods" element={<ComboStore />} />
                 <Route path="/offer" element={<Offer />} />
-                <Route path="/productDetails" element={<ProductDetails />} />
-                <Route path="/cart" element={<Cart />} />
-                <Route path="/paymentgateway" element={<Payment />} />
-                <Route path="/profile" element={<Profile />} />
                 <Route path="/premiumproducts" element={<PremiumProducts />} />
                 <Route path="/healthydelights" element={<HealthyDelights />} />
-                <Route path="/WeightsLoss" element={<WeightsLoss />} /> 
-                <Route path="/weightsGain" element={<Weightsgain />} /> 
+                <Route path="/WeightsLoss" element={<WeightsLoss />} />
+                <Route path="/weightsGain" element={<Weightsgain />} />
                 <Route path="/weaning" element={<WeaningDiet />} />
                 <Route path="/schoolgoing" element={<SchoolKids />} />
                 <Route path="/adults" element={<AdultsDiet />} />
@@ -83,13 +83,17 @@ export default function MainRoutes() {
                 <Route path="/diabetes-millets-diet" element={<DiabetesMellitus />} />
                 <Route path="/gluten-free-diet" element={<GlutenFreeDiet />} />
                 <Route path="/lactose-introlerent" element={<LactoseIntrolerent />} />
+               
             </Route>
             <Route path="/" element={<Home />} />
             <Route path="/home" element={<Home />} />
-            <Route element={<ProtectedRoutes />}>
-            <Route path="/shop" element={<Shop />} />
-             
+
+
+            <Route element={<ProtectedRoutes />}>          
+                <Route path="/paymentgateway" element={<Payment />} />
+                <Route path="/profile" element={<Profile />} />          
             </Route>
         </Routes>
     ) : null;
 }
+
