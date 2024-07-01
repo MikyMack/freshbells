@@ -3,7 +3,7 @@ import leaf from "../../assets/animation/leaf.json";
 import badge from "../../assets/animation/badge.json";
 import chemical from "../../assets/animation/chemical.json";
 import secure from "../../assets/animation/secure.json";
-import trees from "../../assets/bg/trees2.png"; 
+import trees from "../../assets/bg/trees2.jpg"; 
 import Lottie from "lottie-react";
 
 const ServicesData = [
@@ -18,8 +18,8 @@ const ServicesData = [
   },
   {
     id: 2,
-    img: badge, 
-    name: "Natural and Healthy",
+    img: badge,   
+    name: "Natural and Healthy",  
     description:
       "Lorem ipsum dolor sit amet ipsum dolor sit ametipsum dolor sit amet ipsum dolor sit amet",
     aosDelay: "300",

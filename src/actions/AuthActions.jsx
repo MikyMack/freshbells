@@ -11,11 +11,13 @@ export const USER_LOGIN = async (dat) => {
   }
 };
 
+// Login Action
 export const LOGIN_ACTION = async (dat) => {
   try {
     const response = await axios.post(API_URLS.LOGIN_API_PATH, dat);
     if (response.data.status === true) {
       localStorage.setItem("authToken", response.data.token);
+      localStorage.setItem("userDetails", JSON.stringify(response.data.user));
     } 
     return response.data;
   } catch (error) {
@@ -23,5 +25,6 @@ export const LOGIN_ACTION = async (dat) => {
     throw error;
   }
 };
+
 
 

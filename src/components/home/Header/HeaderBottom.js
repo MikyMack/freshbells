@@ -6,21 +6,38 @@ import Flex from "../../designLayouts/Flex";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { TypeAnimation } from "react-type-animation";
-import "./Headerbottom.css"
+import "./Headerbottom.css";
 import { data } from "../../../constants/index";
+import { toast } from "react-toastify";
+import { SpecialCateg } from "../../../actions/HomeActions";
 
 const HeaderBottom = () => {
   const { cartTotalQuantity } = useSelector((state) => state.cart);
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const dispatch = useDispatch();
   const [show, setShow] = useState(false);
   const [showUser, setShowUser] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+  const [speciCateg, setSpeciCateg] = useState([]);
 
   const handleLogout = (e) => {
     e.preventDefault();
     dispatch({ type: 'LOGOUT', payload: true });
+    toast.error("Successfully logged out");
   };
+
+  useEffect(() => {
+    async function fetchSpecialCateg() {
+      try {
+        const data = await SpecialCateg();
+        setSpeciCateg(data.splcategories); 
+      } catch (error) {
+        console.error('Failed to fetch categories:', error);
+      }
+    }
+    fetchSpecialCateg();
+  }, []);
 
   useEffect(() => {
     const spans = document.querySelectorAll('.word span');
@@ -54,17 +71,17 @@ const HeaderBottom = () => {
   };
 
   return (
-    <div className="w-full p-2 h-full relative bg-[#324c21]">
+    <div className="parent-div w-full p-2 h-full relative bg-[#324c21]">
       <div className="mx-auto">
         <Flex className="flex flex-col lg:flex-row items-start lg:items-center justify-between w-full px-4 lg:pb-0 h-full">
           {/* Menu Button */}
-          <div className="flex h-14 cursor-pointer items-center gap-2 text-lightText">
-            <button onClick={() => setShow(!show)} className="bg-white transition-all py-2 px-4 rounded-2xl hover:bg-[#ff5f5f] hover:rounded-md flex items-center gap-3 group hover:scale-105 duration-300">
-              <MdMenuOpen className="w-5 h-5 text-black group-hover:text-white group-hover:animate-pulse" />
+          <div className="flex h-14 cursor-pointer items-center gap-2 text-lightText focus:bg-transparent">
+            <button onClick={() => setShow(!show)} className="bg-white transition-all py-2 px-4 rounded-2xl hover:bg-green-300 hover:rounded-md flex items-center gap-3 group hover:scale-105 duration-300">
+              <MdMenuOpen className="w-5 h-5 text-black group-hover:animate-pulse" />
             </button>
-            <div className="word text-white">
+            <div className="word text-white ">
               {"Shop by Category".split("").map((char, index) => (
-                <span key={index} className={`char${index + 1}`}>{char === " " ? "\u00A0" : char}</span>
+                <span key={`char-${index}`} className={`char${index + 1}`}>{char === " " ? "\u00A0" : char}</span>
               ))}
             </div>
             {show && (
@@ -72,14 +89,31 @@ const HeaderBottom = () => {
                 initial={{ y: 30, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.5 }}
-                className="absolute top-20 z-30 bg-lightText text-white w-auto h-auto p-4 pb-6"
+                className="absolute top-20 bg-green-300 text-center z-40 text-gray-700 w-auto h-auto p-4 pb-6"
               >
-                <li className="px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover:text-[#5efa6b] duration-300 cursor-pointer">Millets</li>
-                <li className="px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover:text-[#5efa6b] duration-300 cursor-pointer">Rices</li>
-                <li className="px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover:text-[#5efa6b] duration-300 cursor-pointer">Powders</li>
-                <li className="px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover:text-[#5efa6b] duration-300 cursor-pointer">Dates</li>
-                <li className="px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover:text-[#5efa6b] duration-300 cursor-pointer">Seeds</li>
-                <li className="px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover:text-[#5efa6b] duration-300 cursor-pointer">Special Mix</li>
+                {speciCateg && speciCateg.length > 0 ? (
+                  speciCateg.map((item) => (
+                    <li key={item.id} className="dropdown px-4 py-1 font-body2 font-semibold md:text-xl xs:text-lg  border-b-[1px] border-b-gray-400 hover:border-b-black hover:text-black duration-300 cursor-pointer">
+                      {item.name}
+                      <div className="dropdown-content text-center bg-gray-300  w-full py-4 ">
+                        {item.children && item.children.length > 0 ? (
+                          item.children.map((child,index) => (
+                            <div key={index}>
+
+                              <p className="p-1 font-body2 md:text-lg xs:text-sm hover:text-green-700 hover:bg-white " key={child.id}>{child.name}</p>
+                              <hr />
+                            </div>
+
+                          ))
+                        ) : (
+                          <p>No subcategories</p>
+                        )}
+                      </div>
+                    </li>
+                  ))
+                ) : (
+                  <li className="px-4 py-1">No categories available</li>
+                )}
               </motion.ul>
             )}
           </div>
@@ -89,6 +123,7 @@ const HeaderBottom = () => {
             <input
               className="flex-1 h-full outline-none placeholder-transparent"
               type="text"
+              id="text"
               value={searchValue}
               onChange={handleSearchChange}
             />
@@ -136,43 +171,48 @@ const HeaderBottom = () => {
               </ul>
             </div>
           )}
-
-        
-
           {/* User Settings and Cart */}
           <div className="flex gap-4 lg:mt-0 xs:mt-3 items-center pr-6 cursor-pointer relative">
             <button
               onClick={() => setShowUser(!showUser)}
-              className="hover:bg-[#ff5f5f] bg-white transition-all py-2 px-4 rounded-2xl hover:rounded-md flex items-center gap-3 group hover:scale-105 duration-300"
+              className="hover:bg-green-300 bg-white transition-all py-2 px-4 rounded-2xl hover:rounded-md flex items-center gap-3 group hover:scale-105 duration-300"
             >
-              <FaUserCog className="text-xl text-primeColor group-hover:text-white drop-shadow-sm cursor-pointer" />
+              <FaUserCog className="text-xl text-primeColor drop-shadow-sm cursor-pointer" />
             </button>
             {showUser && (
               <motion.ul
                 initial={{ y: 30, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.5 }}
-                className="absolute top-20 right-1 z-30 bg-lightText text-white w-44 h-auto p-4 pb-6"
+                className="absolute top-20 right-1 z-30 bg-green-300 text-xl text-center font-body2 text-black w-44 h-auto p-4 pb-6"
               >
-                <Link onClick={() => setShowUser(false)} to="/signin">
-                  <li className="px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover:text-[#5efa6b] duration-300 cursor-pointer">Login</li>
-                </Link>
-                <Link onClick={() => setShowUser(false)} to="/signup">
-                  <li className="px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover:text-[#5efa6b] duration-300 cursor-pointer">Sign Up</li>
-                </Link>
-                <Link onClick={() => setShowUser(false)} to="/profile">
-                  <li className="px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover:text-[#5efa6b] duration-300 cursor-pointer">Profile</li>
-                </Link>
-                <div onClick={handleLogout}>
-                  <li className="px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover:text-[#5efa6b] duration-300 cursor-pointer">Logout</li>
-                </div>
+                {isAuthenticated ? (
+                  <>
+                    <Link onClick={() => setShowUser(false)} to="/profile">
+                      <li className="px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black duration-300 cursor-pointer">Profile</li>
+                    </Link>
+                    <Link onClick={() => setShowUser(false)} to="/orders">
+                      <li className="px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black duration-300 cursor-pointer">Orders</li>
+                    </Link>
+                    <li onClick={handleLogout} className="px-4 py-1 border-b-[1px] text-red-600 border-b-gray-400 hover:border-b-black duration-300 cursor-pointer">Logout</li>
+                  </>
+                ) : (
+                  <>
+                    <Link onClick={() => setShowUser(false)} to="/SignIn">
+                      <li className="px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover:text-black duration-300 cursor-pointer">Login</li>
+                    </Link>
+                    <Link onClick={() => setShowUser(false)} to="/signup">
+                      <li className="px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover:text-black duration-300 cursor-pointer">Register</li>
+                    </Link>
+                  </>
+                )}
               </motion.ul>
             )}
             <Link to="/cart">
               <div className="relative">
-                <button className="hover:bg-[#ff5f5f] bg-white transition-all py-[9px] px-4 rounded-2xl hover:rounded-md flex items-center gap-3 group hover:scale-105 duration-300">
-                  <FaShoppingCart className="text-primeColor group-hover:text-white" />
-                  <span className="absolute font-body1 top-0 -right-2 group-hover:bg-white group-hover:text-primeColor text-xs w-4 h-4 flex items-center text-center justify-center rounded-full font-semibold bg-lightText text-white">
+                <button className="hover:bg-green-300 bg-white transition-all py-[9px] px-4 rounded-2xl hover:rounded-md flex items-center gap-3 group hover:scale-105 duration-300">
+                  <FaShoppingCart className="text-primeColor" />
+                  <span className="absolute font-body1 top-0 -right-2 group-hover:bg-white group-hover:text-primeColor text-xs w-4 h-4 flex items-center text-center justify-center rounded-full font-semibold bg-green-300">
                     {cartTotalQuantity}
                   </span>
                 </button>

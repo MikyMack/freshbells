@@ -66,9 +66,9 @@ const OtpPage = () => {
           </Link>
           <div className="flex flex-col gap-1 -mt-1">
             <h1 className="font-titleFont text-xl font-medium">
-              Get started for free
+              OTP Page
             </h1>
-            <p className="text-base">Create your account to access more</p>
+            <p className="text-base">Enter your otp here...</p>
           </div>
           <div className="w-[300px] flex items-start gap-3">
             <span className="text-green-500 mt-1">

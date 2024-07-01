@@ -14,24 +14,22 @@ import HeaderBottom from "../../components/home/Header/HeaderBottom";
 import Footer from "../../components/home/Footer/Footer";
 import FooterBottom from "../../components/home/Footer/FooterBottom";
 import HomeNutritionForm from "../../components/SpecialCase/HomeNutritionForm";
-import { useCallback } from 'react';
-import Loader from "../../components/Loader/Loader"
-import { ToastContainer} from 'react-toastify';
+import { fetchHomeDetails } from "../../actions/HomeActions";
+import Loader from "../../components/Loader/Loader";
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import SpecialCase from "../../components/SpecialCase/SpecialCase"
-import {Home_Details} from "../../actions/HomeActions"
-
+import SpecialCase from "../../components/SpecialCase/SpecialCase";
+import "./Home.css"
 
 const Home = () => {
   const isLoading = useSelector(state => state.auth.isLoading);
   const dispatch = useDispatch();
-
   const [showNutritionForm, setShowNutritionForm] = useState(false);
 
-  const closeNutritionForm = useCallback(() => {
+  const closeNutritionForm = () => {
     setShowNutritionForm(false);
     localStorage.setItem('nutritionFormClosed', 'true'); 
-  }, []);
+  };
 
   useEffect(() => {
     const isFormClosed = localStorage.getItem('nutritionFormClosed') === 'true';
@@ -44,12 +42,7 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    dispatch({ type: 'SET_LOADING', payload: true });
-    const timer = setTimeout(() => {
-      dispatch({ type: 'SET_LOADING', payload: false });
-    }, 1500); 
-
-    return () => clearTimeout(timer);
+    dispatch(fetchHomeDetails());
   }, [dispatch]);
 
   if (isLoading) {
@@ -57,7 +50,7 @@ const Home = () => {
   }
 
   return (
-    <>
+    <div className="parent-div">
       {showNutritionForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black opacity-50"></div>
@@ -86,11 +79,8 @@ const Home = () => {
       </div>
       <Footer />
       <FooterBottom />
-    </>
+    </div>
   );
 };
 
 export default Home;
-
-
-

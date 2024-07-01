@@ -4,7 +4,9 @@ import img3 from "../assets/images/products/newArrival/black papper.png"
 import img4 from "../assets/images/products/newArrival/black papper.png"
 import img5 from "../assets/images/products/newArrival/cloves.png"
 import spfOne from "../assets/images/products/newArrival/nutmace.png"
-
+export const baseURL = "http://192.168.29.80:8000/";
+// export const  baseURL= 'https://a2zserver.in/Freshbells/api/';
+// export const BASEURL= 'https://a2zserver.in/Freshbells/';
 export const data = [{
   _id: 1001,
   img: spfOne,

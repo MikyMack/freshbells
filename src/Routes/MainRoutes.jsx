@@ -32,6 +32,9 @@ import DiabetesMellitus from '../pages/MealPlans/SpecialConditions/DiabetesMelli
 import GlutenFreeDiet from '../pages/MealPlans/SpecialConditions/GlutenFreeDiet';
 import LactoseIntrolerent from '../pages/MealPlans/SpecialConditions/LactoseIntrolerent';
 import OtpPage from '../pages/Account/Otp';
+import CheckOut from '../pages/CheckoutPage/CheckOut';
+import Orders from '../pages/Orderhistory/Orders';
+import ForgotPasswordPage from '../pages/Account/ForgotPassword';
 
 export default function MainRoutes() {
     const [showRoutes, setShowRoutes] = useState(false);
@@ -62,6 +65,7 @@ export default function MainRoutes() {
                 <Route path="/signup" element={<SignUp />} />
                 <Route path="/signin" element={<SignIn />} />
                 <Route path="/otppage" element={<OtpPage />} />
+                <Route path='/forgot-password' element={<ForgotPasswordPage />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/productDetails" element={<ProductDetails />} />
                 <Route path="/shop" element={<Shop />} />
@@ -83,7 +87,8 @@ export default function MainRoutes() {
                 <Route path="/diabetes-millets-diet" element={<DiabetesMellitus />} />
                 <Route path="/gluten-free-diet" element={<GlutenFreeDiet />} />
                 <Route path="/lactose-introlerent" element={<LactoseIntrolerent />} />
-               
+                <Route path='/checkout' element={<CheckOut/>} />
+                <Route path='/orders' element={<Orders />} />
             </Route>
             <Route path="/" element={<Home />} />
             <Route path="/home" element={<Home />} />

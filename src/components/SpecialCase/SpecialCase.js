@@ -28,7 +28,7 @@ const SpecialCase = () => {
           </div>
           <p className="text-xs font-semibold font-titleFont">Cart</p>
 
-            <p className="absolute top-1 right-3 bg-lightText text-white text-xs w-4 h-4 rounded-full flex items-center justify-center font-semibold">
+            <p className="absolute top-1 right-3 bg-green-300 text-xs w-4 h-4 rounded-full flex items-center justify-center font-semibold">
             {cartTotalQuantity}
             </p>
        

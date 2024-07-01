@@ -42,7 +42,7 @@ const Footer = () => {
     <div className="flex justify-center items-center w-full">
       <div style={BannerImg} className="text-primeColor w-full">
         <div className="flex w-full">
-          <div data-aos="fade-up" className="flex items-center justify-center pb-10 pt-5 w-full">
+          <div  className="flex items-center justify-center pb-10 pt-5 w-full">
             {/* company details */}
             {/* Footer Links */}
             <div className="grid md:grid-cols-3 lg:grid-cols-3 xs:grid-cols-1 sm:grid-cols-1  col-span-2 md:pl-10 w-full">

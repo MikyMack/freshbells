@@ -24,7 +24,7 @@ const About = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setRegisteredUsers((prev) => {
-        if (prev < 4753) {
+        if (prev < 1053) {
           return prev + 1;
         } else {
           return prev;
@@ -37,7 +37,7 @@ const About = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setVisitors((prev) => {
-        if (prev < 1320) {
+        if (prev < 420) {
           return prev + 1;
         } else {
           return prev;
@@ -92,8 +92,8 @@ const About = () => {
           </div>
           <div className="lg:w-1/2 lg:pl-8 mt-8 lg:mt-0">
             <div className="about-img flex flex-wrap items-center justify-center ">
-              <img src={aboutImg} alt="about" className="w-1/2 lg:w-[250px] h-[250px]  p-3 lg:mb-0 object-contain" />
-              <img src={aboutImg1} alt="about" className="w-1/2 lg:w-[250px] h-[250px] p-3 lg:mb-0 object-contain" />
+              <img loading="lazy" src={aboutImg} alt="about" className="w-1/2 lg:w-[250px] h-[250px]  p-3 lg:mb-0 object-contain" />
+              <img loading="lazy" src={aboutImg1} alt="about" className="w-1/2 lg:w-[250px] h-[250px] p-3 lg:mb-0 object-contain" />
             </div>
           </div>
         </div>

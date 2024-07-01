@@ -1,12 +1,16 @@
 import axios from "axios";
 
+const token = localStorage.getItem('authToken');
+const authHeader = `Bearer ${token}`;
+
 const instance = axios.create({
-   baseURL: 'http://192.168.29.80:8000/api',
-   headers: {
-     'Content-Type': 'application/json',
-     'Accept': 'application/json',
-     'Access-Control-Allow-Origin': '*'
-   }
+  baseURL: 'https://a2zserver.in/Freshbells/api', // Correct baseURL
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    'Access-Control-Allow-Origin': 'http://localhost:3000',
+    'Authorization': authHeader
+  }
 });
 
 instance.interceptors.response.use(

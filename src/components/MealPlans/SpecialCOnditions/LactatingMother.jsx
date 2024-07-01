@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import Breadcrumbs from '../../pageProps/Breadcrumbs'
-import southIndianDiet from "../../../assets/images/diets/diet1.jpg"
-import northIndianDiet from "../../../assets/images/banner/back1.jpg"
+import southIndianDiet from "../../../assets/images/specialconditions/laction-s.jpg"
+import northIndianDiet from "../../../assets/images/specialconditions/lactationN.jpg"
 import lactating from "../../../assets/images/New folder/13.png"
 import { FaCloudDownloadAlt } from "react-icons/fa";
 import { BsSuitHeartFill } from "react-icons/bs";
@@ -48,7 +48,7 @@ export default function LactatingMother() {
         <div className="border-b my-10"></div>
         <div className="flex flex-wrap items-center">
           <div className="w-full xl:w-1/2 px-4 mb-6 xl:mb-0">
-            <img className="w-full h-auto object-cover" src={lactating} alt="single-img-10" />
+            <img loading='lazy' className="w-full h-auto object-cover" src={lactating} alt="single-img-10" />
           </div>
           <div className="w-full xl:w-1/2 px-4 bg-white py-5">
             <h3 className="text-2xl font-semibold font-body2 mb-4">Diet tips on lactation</h3>

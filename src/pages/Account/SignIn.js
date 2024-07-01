@@ -6,9 +6,11 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import logo from "../../assets/logo/logo.webp"
 import { LOGIN_ACTION } from "../../actions/AuthActions";
+import { AddCart } from "../../actions/CartActions";
 
 const SignIn = () => {
   const isLoading = useSelector(state => state.auth.isLoading);
+  const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -31,6 +33,18 @@ const SignIn = () => {
         const response = await LOGIN_ACTION(formData);
         if (response.status === true) {
           dispatch({ type: 'SET_AUTH_STATE' });
+          if (cartItems.length > 0) {
+            for (const cartItem of cartItems) {
+              const cartData = {
+                product_id: cartItem.id,
+                volume: cartItem.volume,
+                unit: cartItem.unit,
+                quantity: cartItem.cartQuantity,
+                price: cartItem.price
+              };
+              await AddCart(cartData);
+            }
+          }
           navigate('/home');
         } else {
           navigate('/signin');
@@ -54,13 +68,13 @@ const SignIn = () => {
       <div className="w-1/2 hidden lgl:inline-flex h-full text-primeColor">
         <div className="w-[450px] h-full bg-[#bbe6b9] px-10 flex flex-col gap-6 justify-center">
           <Link to="/">
-            <img src={logo} alt="logoImg" className="w-28" />
+            <img loading="lazy" src={logo} alt="logoImg" className="w-28" />
           </Link>
           <div className="flex flex-col gap-1 -mt-1">
             <h1 className="font-titleFont text-xl font-medium">
-              Get started for free
+              Login Here
             </h1>
-            <p className="text-base">Create your account to access more</p>
+            <p className="text-base">Enter your credentials</p>
           </div>
           <div className="w-[300px] flex items-start gap-3">
             <span className="text-green-500 mt-1">

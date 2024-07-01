@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import pic from "../../../assets/images/banner/newbg3.jpg"
+import pic from "../../../assets/images/banner/newbg2.jpg"
 import ShopNow from "../../designLayouts/buttons/ShopNow";
 import Image from "../../designLayouts/Image";
 

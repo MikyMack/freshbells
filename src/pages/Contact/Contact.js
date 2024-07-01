@@ -61,24 +61,24 @@ const Contact = () => {
                 {/* Form elements */}
                 <div className="space-y-4">
                   <div className="form-group">
-                    <input name="name" type="text" placeholder="Your Name *" required className="w-full p-3 border border-gray-300 rounded-lg" />
+                    <input id="name" name="name" type="text" placeholder="Your Name *" required className="w-full p-3 border border-gray-300 rounded-lg" />
                   </div>
                   <div className="flex flex-wrap -mx-2">
                     <div className="w-full md:w-1/2 px-2 form-group">
-                      <input name="email" type="email" placeholder="Your Email *" required className="w-full p-3 border border-gray-300 rounded-lg" />
+                      <input id="email" name="email" type="email" placeholder="Your Email *" required className="w-full p-3 border border-gray-300 rounded-lg" />
                     </div>
                     <div className="w-full md:w-1/2 px-2 form-group">
-                      <input name="phone" type="text" placeholder="Your Number *" required className="w-full p-3 border border-gray-300 rounded-lg" />
+                      <input id="phone" name="phone" type="text" placeholder="Your Number *" required className="w-full p-3 border border-gray-300 rounded-lg" />
                     </div>
                   </div>
                   <div>
-                    <input name="subject" type="text" placeholder="Subject *" required className="w-full p-3 border border-gray-300 rounded-lg" />
+                    <input id="subject" name="subject" type="text" placeholder="Subject *" required className="w-full p-3 border border-gray-300 rounded-lg" />
                   </div>
                   <div>
                     <textarea name="message" id="message" cols="30" rows="4" placeholder="Message *" required className="w-full p-3 border border-gray-300 rounded-lg"></textarea>
                   </div>
                   <div>
-                    <input name="submit" type="submit" value="Send Message" className="w-full bg-primeColor text-white p-3 rounded-lg cursor-pointer hover:bg-black" />
+                    <input id="submit" name="submit" type="submit" value="Send Message" className="w-full bg-primeColor text-white p-3 rounded-lg cursor-pointer hover:bg-black" />
                   </div>
                 </div>
               </form>

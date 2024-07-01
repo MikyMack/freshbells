@@ -3,11 +3,19 @@ import { combineReducers } from 'redux';
 import { configureStore } from '@reduxjs/toolkit';
 import logger from 'redux-logger';
 import cartReducer from './cartSlice';
-import productReducer from './productSlice';
+import {
+  SET_LOADING,
+  SPECIAL_CATEG_SUCCESS,
+  SPECIAL_CATEG_FAIL
+} from '../actions/HomeActions';
 
 const initialState = {
   isAuthenticated: localStorage.getItem('isAuthenticated') === 'true',
   isLoading: false,
+  homeDetails: null,
+  shopDetails: null,
+  categories: null,
+  error: null,
 };
 
 function authReducer(state = initialState, action) {
@@ -18,9 +26,16 @@ function authReducer(state = initialState, action) {
     case 'LOGOUT':
       localStorage.setItem('isAuthenticated', 'false');
       return { ...state, isAuthenticated: false };
-    case 'SET_LOADING':
-      console.log('SET_LOADING action dispatched with payload:', action.payload);
+    case SET_LOADING:
       return { ...state, isLoading: action.payload };
+    case 'SET_HOME_DETAILS':
+      return { ...state, homeDetails: action.payload };
+    case 'SET_SHOP_DETAILS':
+      return { ...state, shopDetails: action.payload };
+    case SPECIAL_CATEG_SUCCESS:
+      return { ...state, categories: action.payload, error: null };
+    case SPECIAL_CATEG_FAIL:
+      return { ...state, error: action.payload };
     default:
       return state;
   }
@@ -29,7 +44,6 @@ function authReducer(state = initialState, action) {
 const rootReducer = combineReducers({
   auth: authReducer,
   cart: cartReducer,
-  product:productReducer,
 });
 
 const store = configureStore({
@@ -38,3 +52,4 @@ const store = configureStore({
 });
 
 export default store;
+

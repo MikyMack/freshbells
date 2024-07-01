@@ -83,7 +83,6 @@ export default function ComboStore() {
   const itemsPerPage = 12;
 
   const pageCount = Math.ceil(filteredData.length / itemsPerPage);
-  const offset = currentPage * itemsPerPage;
 
   useEffect(() => {
     setFilteredData(data);
