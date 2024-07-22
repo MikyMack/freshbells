@@ -8,11 +8,13 @@ import { useNavigate } from "react-router-dom";
 import { addToCart, decreaseCart } from "../../../redux/cartSlice";
 import { GiShoppingCart } from "react-icons/gi";
 import { baseURL } from "../../../constants/index";
+import { AddCart } from "../../../actions/CartActions";
 
 const SpecialOffers = () => {
     const homeDetails = useSelector(state => state.auth.homeDetails);
     const dispatch = useDispatch()
     const cartItems = useSelector((state) => state.cart.cartItems);
+    const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
 
     const navigate = useNavigate()
     const handleDecrease = (cartItem) => {
@@ -22,7 +24,18 @@ const SpecialOffers = () => {
         dispatch(addToCart(cartItem));
     }
     const handleBuy = (product) => {
-        dispatch(addToCart(product));
+        const cartData = {
+            product_id: product.id,
+            volume: product.volume,
+            unit: product.unit,
+            quantity: product.cartQuantity,
+            price: product.price
+          };
+        if(isAuthenticated){
+       AddCart(cartData);
+        }else{
+            dispatch(addToCart(product));
+        }
         navigate("/cart")
     }
 
@@ -34,18 +47,20 @@ const SpecialOffers = () => {
     if (!homeDetails || !homeDetails.healthy || homeDetails.healthy.length === 0) {
         return null;
     }
+    const handleView = (id) => {
+        navigate(`/productDetails`, { state: { productId: id } });
+      };
 
     return (
         <div className=" pb-20 ">
             <Heading heading="Healthy Delights" />
-
             <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-1" data-aos="fade-up">
                 {homeDetails.healthy.slice(0, 10).map((product, index) => (
                     <div key={product.id} className="p-2 ">
                         <div className="relative overflow-hidden group max-w-full max-h-full hover:shadow-slate-700 shadow-xl">
                             <div className='flex flex-col items-center justify-center max-w-full max-h-full bg-gray-100'>
-                                <div className="relative">
-                                    <Image className="md:w-[230px] md:h-[230px] xs:w-[140px] xs:h-[140px] object-contain" imgSrc={`${baseURL}${product.image}`} />
+                                <div className="relative" onClick={() => handleView(product.id)}>
+                                    <Image className="md:w-[230px] md:h-[230px] xs:w-[140px] xs:h-[140px] cursor-pointer object-contain" imgSrc={`${baseURL}${product.image}`} />
                                 </div>
                             </div>
                             <div className="py-1 flex flex-col gap-1 border-[1px] border-t-0 px-2 bg-white group-hover:bg-yellow-100">

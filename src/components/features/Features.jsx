@@ -63,11 +63,12 @@ const Services = () => {
                 data-aos-delay={service.aosDelay}
                 className={`rounded-2xl mb-4 mt-2 bg-white relative shadow-xl group w-[300px] h-[250px] hover:bg-[${service.hoverColor || '#f3f4f6'}]`}
               >
-                <div className="text-7xl flex justify-center h-40 items-center text-primeColor mx-auto transform group-hover:scale-105 group-hover:rotate-6 duration-300">
-                  <Lottie animationData={service.img} className="w-40" />
+               
+                <div className="flex justify-center mt-8 h-40 w-full items-center text-primeColor mx-auto transform group-hover:scale-105 group-hover:rotate-6 duration-300">
+                  <Lottie animationData={service.img} className="w-1/2" />
                 </div>
-                <div className="text-center">
-                  <h1 className="text-xl font-bold text-primeColor">{service.name}</h1>
+                <div className="text-center mt-2">
+                  <h1 className="text-2xl z-30 font-body2 font-semibold text-black transform group-hover:translate-z-10 duration-300">{service.name}</h1>
                 </div>
               </div>
             ))}

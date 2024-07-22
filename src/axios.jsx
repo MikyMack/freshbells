@@ -4,7 +4,9 @@ const token = localStorage.getItem('authToken');
 const authHeader = `Bearer ${token}`;
 
 const instance = axios.create({
-  baseURL: 'https://a2zserver.in/Freshbells/api', // Correct baseURL
+  baseURL:'http://192.168.29.80:8000/api',
+  // baseURL: 'https://a2zserver.in/Freshbells/api', 
+  // baseURL:"https://vyavaharapp.com/freshbells/api",
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',

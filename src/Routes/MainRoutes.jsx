@@ -35,6 +35,7 @@ import OtpPage from '../pages/Account/Otp';
 import CheckOut from '../pages/CheckoutPage/CheckOut';
 import Orders from '../pages/Orderhistory/Orders';
 import ForgotPasswordPage from '../pages/Account/ForgotPassword';
+import ShopByCategory from '../components/SpecialShop/ShopByCategory';
 
 export default function MainRoutes() {
     const [showRoutes, setShowRoutes] = useState(false);
@@ -89,6 +90,8 @@ export default function MainRoutes() {
                 <Route path="/lactose-introlerent" element={<LactoseIntrolerent />} />
                 <Route path='/checkout' element={<CheckOut/>} />
                 <Route path='/orders' element={<Orders />} />
+                <Route path='/ShopByCategory' element={<ShopByCategory />} />
+
             </Route>
             <Route path="/" element={<Home />} />
             <Route path="/home" element={<Home />} />

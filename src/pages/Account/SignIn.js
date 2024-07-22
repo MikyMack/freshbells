@@ -30,6 +30,7 @@ const SignIn = () => {
     dispatch({ type: 'SET_LOADING', payload: true });
     if (formData.email && formData.password) {
       try {
+  
         const response = await LOGIN_ACTION(formData);
         if (response.status === true) {
           dispatch({ type: 'SET_AUTH_STATE' });

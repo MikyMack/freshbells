@@ -6,18 +6,19 @@ import Image from "../../designLayouts/Image";
 import SampleNextArrow from "../NewArrivals/SampleNextArrow";
 import SamplePrevArrow from "../NewArrivals/SamplePrevArrow";
 import Slider from "react-slick";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart, decreaseCart } from "../../../redux/cartSlice";
 import { GiShoppingCart } from "react-icons/gi";
 import {baseURL} from "../../../constants/index"
-
+import { AddCart } from "../../../actions/CartActions";
 
 
 const BestSellers = () => {
   const dispatch = useDispatch()
   const homeDetails = useSelector(state => state.auth.homeDetails);
   const cartItems = useSelector((state) => state.cart.cartItems);
+  const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
   const settings = {
     infinite: true,
     speed: 500,
@@ -68,12 +69,26 @@ const BestSellers = () => {
     dispatch(addToCart(cartItem));
   }
   const handleBuy = (product) => {
-    dispatch(addToCart(product));
+    const cartData = {
+      product_id: product.id,
+      volume: product.volume,
+      unit: product.unit,
+      quantity: product.cartQuantity,
+      price: product.price
+    };
+    if(isAuthenticated){
+       AddCart(cartData)
+    }else{
+      dispatch(addToCart(product));
+    }
     navigate("/cart")
   }
   const getCartQuantity = (productId) => {
     const cartItem = cartItems.find((item) => item.id === productId);
     return cartItem ? cartItem.cartQuantity : 0;
+  };
+  const handleView = (id) => {
+    navigate(`/productDetails`, { state: { productId: id } });
   };
   return (
     <div className="w-full mt-6 pb-20">
@@ -84,8 +99,8 @@ const BestSellers = () => {
           <div key={product.id} className="p-2" data-aos="fade-up">
             <div className="relative overflow-hidden group max-w-full max-h-full hover:shadow-slate-700 shadow-md">
               <div className="flex flex-col items-center justify-center max-w-full max-h-full bg-white ">
-                <div className="relative">
-                  <Link to="/productDetails"> <Image className="w-[250px] h-[250px] object-contain" imgSrc={`${baseURL}${product.image}`} />  </Link>
+                <div className="relative" onClick={() => handleView(product.id)}>
+                  <Image className="w-[250px] h-[250px] object-contain cursor-pointer" imgSrc={`${baseURL}${product.image}`} />
                 </div>
               </div>
               <div className="py-1 flex flex-col gap-1 border-[1px] border-t-0 px-2 bg-white group-hover:bg-yellow-100">
@@ -130,8 +145,8 @@ const BestSellers = () => {
                     Add <span className="pl-1"><GiShoppingCart /></span>
                   </button>
                 </div>
-                <div className={`md:text-lg xl:text-xl lg:text-xl sm:text-lg font-normal text-center xs:text-sm ${product.in_stock === 0 || (product.in_stock > 0 && product.stock < 10) ? 'text-red-500' : 'text-green-500'}`}>
-                  {product.in_stock === 0 ? "Out of Stock" : product.in_stock < 10 ? `Only ${product.in_stock} items left` : `${product.in_stock} items in stock`}
+                <div className={`md:text-lg xl:text-xl lg:text-xl sm:text-lg font-normal text-center xs:text-sm ${product.in_stock === 0 || (product.in_stock >= 0 && product.in_stock < 10) ? 'text-red-500' : 'text-green-500'}`}>
+                  {product.in_stock === 0 ? "Out of Stock" : product.in_stock < 10 ? `Only ${product.in_stock} ${product.unit} left, Hurry up` : `${product.in_stock} ${product.unit} items in stock`}
                 </div>
               </div>
             </div>

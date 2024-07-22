@@ -1,24 +1,37 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Slider from "react-slick";
 import Heading from "../Products/Heading";
 import SampleNextArrow from "./SampleNextArrow";
 import SamplePrevArrow from "./SamplePrevArrow";
-import { BsSuitHeartFill } from "react-icons/bs";
-import { FaShoppingCart, FaRupeeSign } from "react-icons/fa";
+import { FaRupeeSign } from "react-icons/fa";
 import Image from "../../designLayouts/Image";
-import { IoEyeSharp } from "react-icons/io5";
-import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart, decreaseCart } from "../../../redux/cartSlice";
 import { GiShoppingCart } from "react-icons/gi";
 import { FaPlus, FaMinus } from "react-icons/fa6";
-import { baseURL } from "../../../constants/index"
-
-
+import { baseURL } from "../../../constants/index";
+import { AddCart } from "../../../actions/CartActions";
+ 
 const NewArrivals = () => {
-  const dispatch = useDispatch()
-  const homeDetails = useSelector(state => state.auth.homeDetails);
+  const dispatch = useDispatch();
+  const homeDetails = useSelector((state) => state.auth.homeDetails);
   const cartItems = useSelector((state) => state.cart.cartItems);
+  const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
+  const navigate = useNavigate();
+
+  const [quantities, setQuantities] = useState({});
+
+  useEffect(() => {
+    if (isAuthenticated && homeDetails) {
+      const initialQuantities = homeDetails.products.reduce((acc, product) => {
+        acc[product.id] = 0; 
+        return acc;
+      }, {});
+      setQuantities(initialQuantities);
+    }
+  }, [isAuthenticated, homeDetails]);
+
   const settings = {
     infinite: true,
     speed: 500,
@@ -53,23 +66,74 @@ const NewArrivals = () => {
       },
     ],
   };
-  const navigate = useNavigate()
+
   const handleDecrease = (cartItem) => {
-    dispatch(decreaseCart(cartItem));
-  }
-  const handleIncrease = (cartItem) => {
-    dispatch(addToCart(cartItem));
-  }
-  const handleBuy = (product) => {
-    dispatch(addToCart(product));
-    navigate("/cart")
-  }
-  const getCartQuantity = (productId) => {
-    const cartItem = cartItems.find((item) => item.id === productId);
-    return cartItem ? cartItem.cartQuantity : 0;
+    if (isAuthenticated) {
+      const newQuantities = {
+        ...quantities,
+        [cartItem.id]: Math.max(quantities[cartItem.id] - 1, 0)
+      };
+      setQuantities(newQuantities);
+      dispatch(decreaseCart(cartItem));
+    } else {
+      dispatch(decreaseCart(cartItem));
+    }
   };
-  const handleView = (product) => {
-    navigate("/productDetails", { state: { product } });
+
+  const handleIncrease = (cartItem) => {
+    const newQuantities = {
+      ...quantities,
+      [cartItem.id]: (quantities[cartItem.id] || 0) + 1
+    };
+    setQuantities(newQuantities);
+
+    const cartData = {
+      product_id: cartItem.id,
+      volume: cartItem.volume,
+      unit: cartItem.unit,
+      quantity: newQuantities[cartItem.id],
+      price: cartItem.price
+    };
+    if (isAuthenticated) {
+      AddCart(cartData);
+    } else {
+      dispatch(addToCart(cartItem));
+    }
+  };
+
+  const handleBuy = (product) => {
+    const newQuantities = {
+      ...quantities,
+      [product.id]: (quantities[product.id] || 0) + 1
+    };
+    setQuantities(newQuantities);
+
+    const cartData = {
+      product_id: product.id,
+      volume: product.volume,
+      unit: product.unit,
+      quantity: newQuantities[product.id],
+      price: product.price
+    };
+    if (isAuthenticated) {
+      AddCart(cartData);
+    } else {
+      dispatch(addToCart(product));
+    }
+    navigate("/cart");
+  };
+
+  const getCartQuantity = (productId) => {
+    if (isAuthenticated) {
+      return quantities[productId] || 0;
+    } else {
+      const cartItem = cartItems.find((item) => item.id === productId);
+      return cartItem ? cartItem.cartQuantity : 0;
+    }
+  };
+
+  const handleView = (id) => {
+    navigate(`/productDetails`, { state: { productId: id } });
   };
 
   return (
@@ -80,21 +144,11 @@ const NewArrivals = () => {
           <div key={product.id} className="p-2" data-aos="fade-up">
             <div className="relative overflow-hidden group hover:shadow-slate-500 shadow-xl">
               <div className='flex flex-col items-center max-w-full max-h-full bg-[#ffffff] group-hover:bg-[#bbe6b9]'>
-                <div className="relative ">
-                  <Image className="w-[250px] h-[250px] object-contain" imgSrc={`${baseURL}${product.image}`} />
-                  <div className="absolute inset-0 flex items-center justify-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-transparent">
-
-                    <button onClick={() => handleView(product)} className="text-black p-2 bg-white rounded-full">
-                      <IoEyeSharp />
-                    </button>
-
-                    <button className="text-blue-600 p-2 bg-white rounded-full">
-                      <FaShoppingCart />
-                    </button>
-                    <button className=" p-2 bg-white text-red-600 rounded-full">
-                      <BsSuitHeartFill />
-                    </button>
-                  </div>
+                <div className="relative " onClick={() => handleView(product.id)}>
+                  <Image
+                    className="w-[250px] h-[250px] object-contain cursor-pointer"
+                    imgSrc={`${baseURL}${product.image}`}   
+                  />
                 </div>
               </div>
               <div className="py-1 flex flex-col gap-1 border-[1px] border-t-0 px-4 bg-[#f5f3f3] group-hover:bg-[#ffffff]">
@@ -112,15 +166,15 @@ const NewArrivals = () => {
                 </div>
                 <div className="flex items-center justify-between">
                   <select
-                  key={index}
+                    key={index}
                     name="quantity"
-                    className="order-1 mt-1 hover:bg-primeColor font-medium font-body2 text-black hover:text-white xl:text-[25px] lg:text-[20px] md:text-[15px] xs:text-[15px] sm:text-[15px]"
+                    className="order-1 mt-1 hover:bg-primeColor font-normal font-body2 text-black hover:text-white xl:text-[20px] lg:text-[15px] md:text-[15px] xs:text-[15px] sm:text-[15px]"
                   >
                     {product.quantity_variants.map((ite) => (
                       <option
                         key={ite.id}
                         value={ite.volume}
-                        className="text-black bg-white font-medium"
+                        className="text-black bg-white font-normal"
                       >
                         {ite.volume}{ite.unit}
                       </option>
@@ -128,16 +182,16 @@ const NewArrivals = () => {
                   </select>
 
                   <div className="flex items-center order-2">
-                    <button onClick={() => handleDecrease(product)} className="px-2 py-2 text-lg bg-gray-500 hover:bg-red-400 text-white " ><FaMinus /></button>
-                    <span className="px-4 text-lg  bg-gray-300">{getCartQuantity(product.id)}</span>
-                    <button onClick={() => handleIncrease(product)} className="px-2 py-2 text-lg bg-gray-500 hover:bg-green-400 text-white" ><FaPlus /></button>
+                    <button onClick={() => handleDecrease(product)} className="px-2 py-2 text-lg bg-gray-500 hover:bg-red-400 text-white"><FaMinus /></button>
+                    <span className="px-4 text-lg bg-gray-300">{getCartQuantity(product.id)}</span>
+                    <button onClick={() => handleIncrease(product)} className="px-2 py-2 text-lg bg-gray-500 hover:bg-green-400 text-white"><FaPlus /></button>
                   </div>
-                  <button onClick={() => handleBuy(product)} className="flex items-center order-3 ml-2 font-body2 hover:bg-primeColor px-2 font-medium xs:text-[15px] md:text-[15px] lg:text-[20px] xl:text-[25px] text-black hover:text-white rounded-2xl hover:rounded-none  hover:translate-y-1 transition-transform duration-500">
+                  <button onClick={() => handleBuy(product)} className="flex items-center order-3 ml-2 font-body2 hover:bg-primeColor px-2 font-medium xs:text-[15px] md:text-[15px] lg:text-[20px] xl:text-[25px] text-black hover:text-white rounded-2xl hover:rounded-none hover:translate-y-1 transition-transform duration-500">
                     Add <span className="pl-1"><GiShoppingCart /></span>
                   </button>
                 </div>
-                <div className={`md:text-lg lg:text-xl sm:text-sm font-normal text-center xs:text-sm ${product.stock === 0 || (product.in_stock > 0 && product.in_stock < 10) ? 'text-red-500' : 'text-green-500'}`}>
-                  {product.in_stock === 0 ? "Out of Stock" : product.in_stock < 10 ? `Only ${product.in_stock} items left` : `${product.in_stock} items in stock`}
+                <div className={`md:text-lg lg:text-xl sm:text-sm font-normal text-center xs:text-sm ${product.stock === 0 || (product.in_stock >= 0 && product.in_stock < 10) ? 'text-red-500' : 'text-green-500'}`}>
+                  {product.in_stock === 0 ? "Out of Stock" : product.in_stock < 10 ? `Only ${product.in_stock} ${product.unit} items left` : `${product.in_stock} ${product.unit} left in stock`}
                 </div>
               </div>
             </div>
@@ -151,5 +205,3 @@ const NewArrivals = () => {
 };
 
 export default NewArrivals;
-
-

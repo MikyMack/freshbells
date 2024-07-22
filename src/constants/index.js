@@ -5,6 +5,7 @@ import img4 from "../assets/images/products/newArrival/black papper.png"
 import img5 from "../assets/images/products/newArrival/cloves.png"
 import spfOne from "../assets/images/products/newArrival/nutmace.png"
 export const baseURL = "http://192.168.29.80:8000/";
+// export const baseURL = "https://vyavaharapp.com/freshbells/api";
 // export const  baseURL= 'https://a2zserver.in/Freshbells/api/';
 // export const BASEURL= 'https://a2zserver.in/Freshbells/';
 export const data = [{
@@ -13,8 +14,8 @@ export const data = [{
   productName: "Garlic",
   price: "350.00",
   offerPrice: "300.00",
-  stock: 10,
-  quantity:[250,500],
+  stock: 10, 
+  quantity:[250,500], 
   badge: true,
   des: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Hic excepturi quibusdam odio deleniti reprehenderit facilis.",
 },

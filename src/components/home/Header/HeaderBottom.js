@@ -3,18 +3,20 @@ import { motion } from "framer-motion";
 import { MdMenuOpen } from "react-icons/md";
 import { FaSearch, FaShoppingCart, FaUserCog } from "react-icons/fa";
 import Flex from "../../designLayouts/Flex";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { TypeAnimation } from "react-type-animation";
 import "./Headerbottom.css";
 import { data } from "../../../constants/index";
 import { toast } from "react-toastify";
 import { SpecialCateg } from "../../../actions/HomeActions";
+import { ShopDetails } from "../../../actions/ShopActions";
 
 const HeaderBottom = () => {
   const { cartTotalQuantity } = useSelector((state) => state.cart);
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [show, setShow] = useState(false);
   const [showUser, setShowUser] = useState(false);
   const [searchValue, setSearchValue] = useState("");
@@ -70,6 +72,22 @@ const HeaderBottom = () => {
     }
   };
 
+  const handleCategoryClick = async (parentCategory, childCategory) => {
+    const requestData = {
+      sub: 0,
+      cat_name: parentCategory.name,
+      cat_id: childCategory.id,
+      spl: parentCategory.name === 'Special Categories' ? 1 : 0,
+    };
+     
+    try {
+      await dispatch(ShopDetails(requestData));
+      navigate('/ShopByCategory');
+    } catch (error) {
+      console.error('Failed to fetch products:', error);
+    }
+  };
+
   return (
     <div className="parent-div w-full p-2 h-full relative bg-[#324c21]">
       <div className="mx-auto">
@@ -98,8 +116,7 @@ const HeaderBottom = () => {
                       <div className="dropdown-content text-center bg-gray-300  w-full py-4 ">
                         {item.children && item.children.length > 0 ? (
                           item.children.map((child,index) => (
-                            <div key={index}>
-
+                            <div key={index} onClick={() => handleCategoryClick(item, child)}>
                               <p className="p-1 font-body2 md:text-lg xs:text-sm hover:text-green-700 hover:bg-white " key={child.id}>{child.name}</p>
                               <hr />
                             </div>
@@ -175,7 +192,7 @@ const HeaderBottom = () => {
           <div className="flex gap-4 lg:mt-0 xs:mt-3 items-center pr-6 cursor-pointer relative">
             <button
               onClick={() => setShowUser(!showUser)}
-              className="hover:bg-green-300 bg-white transition-all py-2 px-4 rounded-2xl hover:rounded-md flex items-center gap-3 group hover:scale-105 duration-300"
+              className="hover:bg-green-300 bg-white transition-all py-[6px] px-4 rounded-2xl hover:rounded-md flex items-center gap-3 group hover:scale-105 duration-300"
             >
               <FaUserCog className="text-xl text-primeColor drop-shadow-sm cursor-pointer" />
             </button>
@@ -210,7 +227,7 @@ const HeaderBottom = () => {
             )}
             <Link to="/cart">
               <div className="relative">
-                <button className="hover:bg-green-300 bg-white transition-all py-[9px] px-4 rounded-2xl hover:rounded-md flex items-center gap-3 group hover:scale-105 duration-300">
+                <button className="hover:bg-green-300 bg-white transition-all py-[7px] px-4 rounded-2xl hover:rounded-md flex items-center gap-3 group hover:scale-105 duration-300">
                   <FaShoppingCart className="text-primeColor" />
                   <span className="absolute font-body1 top-0 -right-2 group-hover:bg-white group-hover:text-primeColor text-xs w-4 h-4 flex items-center text-center justify-center rounded-full font-semibold bg-green-300">
                     {cartTotalQuantity}
@@ -226,3 +243,4 @@ const HeaderBottom = () => {
 };
 
 export default HeaderBottom;
+

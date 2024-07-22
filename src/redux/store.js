@@ -6,8 +6,9 @@ import cartReducer from './cartSlice';
 import {
   SET_LOADING,
   SPECIAL_CATEG_SUCCESS,
-  SPECIAL_CATEG_FAIL
-} from '../actions/HomeActions';
+  SPECIAL_CATEG_FAIL,
+} from '../actions/HomeActions'; 
+import { SET_PRODUCTS } from '../actions/ShopActions';
 
 const initialState = {
   isAuthenticated: localStorage.getItem('isAuthenticated') === 'true',
@@ -15,6 +16,7 @@ const initialState = {
   homeDetails: null,
   shopDetails: null,
   categories: null,
+  products: null,
   error: null,
 };
 
@@ -36,6 +38,8 @@ function authReducer(state = initialState, action) {
       return { ...state, categories: action.payload, error: null };
     case SPECIAL_CATEG_FAIL:
       return { ...state, error: action.payload };
+    case SET_PRODUCTS:
+      return { ...state, products: action.payload };
     default:
       return state;
   }
@@ -52,4 +56,3 @@ const store = configureStore({
 });
 
 export default store;
-

@@ -14,6 +14,7 @@ import { useNavigate } from 'react-router-dom'
 import { addToCart, decreaseCart } from '../../../redux/cartSlice'
 import { HealthyDietsWeightGain } from '../../../actions/MealPlansActions'
 import { baseURL } from '../../../constants'
+import { ToastContainer } from 'react-toastify';
 
 export default function WeightGa() {
     const itemsPerPage = 10
@@ -69,6 +70,7 @@ export default function WeightGa() {
         <div className='bg-[#EFFDEC] font-body2'>
             <div className="max-w-container mx-auto  pb-12">
                 <Breadcrumbs title="Weight Gain Diet" />
+                <ToastContainer /> 
                 <section>
                     <div className="container mx-auto px-4">
                         <div className="flex flex-wrap mt-10">

@@ -24,7 +24,7 @@ const ImageList = [
   {
     id: 3,
     img: Image3,
-    title: "Best Combo PLans For Lactating Mothers",
+    title: "Best Combo Plans For Lactating Mothers",
     description: "Get a healthy life eat fresh and healthy food",
   },
 ];

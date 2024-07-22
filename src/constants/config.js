@@ -11,6 +11,17 @@ const Update_Quantity='/update-quantity';
 const Weight_loss='/meal-plans/diets/weight-loss';
 const Weight_Gain='/meal-plans/diets/weight-gain';
 const Pcod='/meal-plans/diets/pcod';
+const Diabetes_Mellitus='/meal-plans/diseases/diabetes-mellitus'
+const Gluten_Free='/meal-plans/diets/gluten-free';
+const Weaning='/meal-plans/ages/geriatric';
+const School_Going='/meal-plans/ages/school-going';
+const Adults='/meal-plans/ages/adults';
+const Expectant_Mothers='/meal-plans/ages/expectant-mothers';
+const Lactating_Mothers='/meal-plans/ages/lactating-mothers'
+const Special_Categories='/products-by-category'
+const Product_Details='/products';
+const Send_Address='/address';
+const Checkout='/checkout';
 
 export const API_URLS = {
   SIGNUP_API_PATH: `${Signup_Api_Path}`,
@@ -26,5 +37,16 @@ export const API_URLS = {
   WEIGHT_LOSS:`${Weight_loss}`,
   WEIGHT_GAIN:`${Weight_Gain}`,
   PCOD:`${Pcod}`,
+  DIABETES:`${Diabetes_Mellitus}`,
+  GLUTEN_FREE:`${Gluten_Free}`,
+  WEANING:`${Weaning}`,
+  SCHOOL_GOING:`${School_Going}`,
+  ADULTS:`${Adults}`,
+  EXPECTANT_MOTHERS:`${Expectant_Mothers}`,
+  LACTATING_MOTHERS:`${Lactating_Mothers}`,
+  SPECIAL_CATEGORIES:`${Special_Categories}`,
+  PRODUCT_DETAILS:`${Product_Details}`,
+  SUBMIT_ADDRESS:`${Send_Address}`,
+  CHECKOUT:`${Checkout}`,
   
 };

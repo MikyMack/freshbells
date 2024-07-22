@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Breadcrumbs from "../../components/pageProps/Breadcrumbs";
 import ShopSideNav from "../../components/pageProps/shopPage/ShopSideNav";
-import { BsSuitHeartFill } from "react-icons/bs";
-import { FaShoppingCart, FaRupeeSign } from "react-icons/fa";
+import { FaRupeeSign } from "react-icons/fa";
 import Image from "../../components/designLayouts/Image";
-import { FaCodeCompare } from "react-icons/fa6";
 import ReactPaginate from 'react-paginate';
 import HeaderBottom from "../../components/home/Header/HeaderBottom";
 import Header from "../../components/home/Header/Header";
@@ -16,7 +14,7 @@ import { BsPlus, BsDash } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 import { addToCart, decreaseCart } from "../../redux/cartSlice";
 import { ToastContainer } from "react-toastify";
-import { ShopDetails } from "../../actions/ShopActions"
+import { ComboStore } from "../../actions/ShopActions"
 
 const Shop = () => {
   const dispatch = useDispatch()
@@ -26,8 +24,9 @@ const Shop = () => {
   useEffect(() => {
     const fetchShopDetails = async () => {
       try {
-        const details = await ShopDetails();
+        const details = await ComboStore();
         setShopDetails(details);
+        console.log(shopDetails, "shopdetails");
       } catch (error) {
         console.error('Failed to fetch shop details', error);
       }
@@ -58,6 +57,9 @@ const Shop = () => {
     const cartItem = cartItems.find((item) => item.id === productId);
     return cartItem ? cartItem.cartQuantity : 0;
   };
+  const handleView = (id) => {
+    navigate(`/productDetails`, { state: { productId: id } });
+  };
   return (
     <div>
       <Header />
@@ -75,19 +77,8 @@ const Shop = () => {
                 <div key={product.id} className="p-2">
                   <div className="relative overflow-hidden group max-w-full max-h-full hover:shadow-slate-700 shadow-md">
                     <div className={`flex flex-col items-center justify-center bg-green-200 group-hover:bg-white max-w-full max-h-full`}>
-                      <div className="relative">
-                        <Image className="md:w-[230px] md:h-[230px] xs:w-[140px] xs:h-[140px] object-contain" imgSrc={`${baseURL}${product.image}`} />
-                        <div className="absolute inset-0 flex items-center justify-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-transparent">
-                          <button className="text-black p-2 bg-white rounded-full">
-                            <FaCodeCompare />
-                          </button>
-                          <button className="text-blue-600 p-2 bg-white rounded-full">
-                            <FaShoppingCart />
-                          </button>
-                          <button className=" p-2 bg-white text-red-600 rounded-full">
-                            <BsSuitHeartFill />
-                          </button>
-                        </div>
+                      <div className="relative" onClick={() => handleView(product.id)}>
+                        <Image className="md:w-[230px] md:h-[230px] cursor-pointer xs:w-[140px] xs:h-[140px] object-contain" imgSrc={`${baseURL}${product.image}`} />
                       </div>
                     </div>
                     <div className="py-1 flex flex-col gap-1 border-[1px] border-t-0 px-4 bg-white">
@@ -130,18 +121,18 @@ const Shop = () => {
               ))}
             </div>
           </div>
-  
+
           <ReactPaginate
             breakLabel="..."
-            nextLabel=" >"
+            nextLabel="next >"
             onPageChange={handlePageClick}
             pageRangeDisplayed={3}
             pageCount={pageCount}
-            previousLabel="< "
+            previousLabel="< previous"
             renderOnZeroPageCount={null}
-            containerClassName="pagination flex justify-center items-center pb-10"
-            activeClassName="bg-red-400 text-white px-1 py-1  rounded-full"
-            pageLinkClassName="px-1 py-1 sm:px-3 sm:py-2 hover:bg-lightGray rounded"
+            containerClassName="pagination flex justify-center gap-1 items-center mt-5"
+            activeClassName="bg-black text-white px-2 py-2 rounded-full"
+            pageLinkClassName="px-3 py-2 hover:bg-lightGray rounded"
           />
 
         </div>

@@ -66,12 +66,13 @@ const handlePincodeSubmit = async () => {
 
   return (
     <div className="sticky top-0 z-50">
-      <div className="bg-[#324c21] py-2 flex justify-between items-center ">
+      <div className="bg-[#324c21] py-1 flex justify-between items-center ">
         <div className="flex-1 md:ml-52">
-          <p className="text-white font-semibold md:text-base sm:text-[10px] xs:text-[10px] text-center"><span data-aos="zoom-in-right">"Nutritious Millets,</span><span data-aos="zoom-in-left"> Healthy Plans"</span></p>
+          <p className=" font-medium font-body2 md:text-base sm:text-[10px] xs:text-[10px] text-center text-white"><span data-aos="zoom-in-right">"Nutritious Millets,</span><span data-aos="zoom-in-left"> Healthy Plans"</span></p>
         </div>
         <div className="px-4 flex items-center">
-          <p className="text-white sm:text-[9px] xs:text-[9px] lg:text-base font-semibold font-body2 cursor-pointer mr-2">English <span className="ml-1 font-serif"> | </span> </p>
+          {/* hidden for mobile devices */}
+          <p className="hidden md:block text-white sm:text-[9px] xs:text-[9px] lg:text-base font-semibold font-body2 cursor-pointer mr-2">English <span className="ml-1 font-serif"> | </span> </p>
           <p className="text-white sm:text-[9px] xs:text-[9px] lg:text-base font-semibold font-body2 cursor-pointer" onClick={() => setPincodePopup(true)}>{serviceable ? (serviceable.city || "Delivery Unavailable") : "Check Pincode"} <span> 🚚 </span> </p>
         </div>
       </div>
