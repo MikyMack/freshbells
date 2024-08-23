@@ -1,41 +1,38 @@
-
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, lazy, Suspense } from 'react';
 import AOS from "aos";
 import "aos/dist/aos.css";
-import PublicRoutes from '../utils/PublicRoutes';
-import SignIn from '../pages/Account/SignIn';
-import SignUp from '../pages/Account/SignUp';
 import { Route, Routes } from 'react-router-dom';
-import Home from '../pages/Home/Home';
+import PublicRoutes from '../utils/PublicRoutes';
 import ProtectedRoutes from '../utils/ProtectedRoutes';
-import Shop from '../pages/Shop/Shop';
-import About from '../pages/About/About';
-import Contact from '../pages/Contact/Contact';
-import ComboStore from '../pages/ComboStore/ComboStore';
-import Offer from '../pages/Offer/Offer';
-import ProductDetails from '../pages/ProductDetails/ProductDetails';
-import Cart from '../pages/Cart/Cart';
-import Payment from '../pages/payment/Payment';
-import Profile from '../pages/Profile/Profile';
-import PremiumProducts from '../pages/ComboStore/PremiumProducts';
-import HealthyDelights from '../pages/ComboStore/HealthyDeli';
-import WeightsLoss from '../pages/MealPlans/HealthyDiets/WeightsLoss';
-import Weightsgain from '../pages/MealPlans/HealthyDiets/WeightGain';
-import WeaningDiet from '../pages/MealPlans/DietPlanForAge/WeaningDiet';
-import SchoolKids from '../pages/MealPlans/DietPlanForAge/SchoolKids';
-import AdultsDiet from '../pages/MealPlans/DietPlanForAge/AdultsDiet';
-import GeriatricDiet from '../pages/MealPlans/DietPlanForAge/GeriatricDiet';
-import ExpectantMothersDiet from '../pages/MealPlans/SpecialConditions/ExpectantMothers';
-import LactatingMothersDiet from '../pages/MealPlans/SpecialConditions/LactatingMothers';
-import PCODdiet from '../pages/MealPlans/SpecialConditions/PCOD';
-import DiabetesMellitus from '../pages/MealPlans/SpecialConditions/DiabetesMellitus';
-import GlutenFreeDiet from '../pages/MealPlans/SpecialConditions/GlutenFreeDiet';
-import LactoseIntrolerent from '../pages/MealPlans/SpecialConditions/LactoseIntrolerent';
-import OtpPage from '../pages/Account/Otp';
-import CheckOut from '../pages/CheckoutPage/CheckOut';
-import Orders from '../pages/Orderhistory/Orders';
-import ForgotPasswordPage from '../pages/Account/ForgotPassword';
-import ShopByCategory from '../components/SpecialShop/ShopByCategory';
+import Home from '../pages/Home/Home';
+
+const SignIn = lazy(() => import('../pages/Account/SignIn'));
+const SignUp = lazy(() => import('../pages/Account/SignUp'));
+const Shop = lazy(() => import('../pages/Shop/Shop'));
+const About = lazy(() => import('../pages/About/About'));
+const Contact = lazy(() => import('../pages/Contact/Contact'));
+const Offer = lazy(() => import('../pages/Offer/Offer'));
+const ProductDetails = lazy(() => import('../pages/ProductDetails/ProductDetails'));
+const Cart = lazy(() => import('../pages/Cart/Cart'));
+const Payment = lazy(() => import('../pages/payment/Payment'));
+const Profile = lazy(() => import('../pages/Profile/Profile'));
+const WeightsLoss = lazy(() => import('../pages/MealPlans/HealthyDiets/WeightsLoss'));
+const Weightsgain = lazy(() => import('../pages/MealPlans/HealthyDiets/WeightGain'));
+const WeaningDiet = lazy(() => import('../pages/MealPlans/DietPlanForAge/WeaningDiet'));
+const SchoolKids = lazy(() => import('../pages/MealPlans/DietPlanForAge/SchoolKids'));
+const AdultsDiet = lazy(() => import('../pages/MealPlans/DietPlanForAge/AdultsDiet'));
+const GeriatricDiet = lazy(() => import('../pages/MealPlans/DietPlanForAge/GeriatricDiet'));
+const ExpectantMothersDiet = lazy(() => import('../pages/MealPlans/SpecialConditions/ExpectantMothers'));
+const LactatingMothersDiet = lazy(() => import('../pages/MealPlans/SpecialConditions/LactatingMothers'));
+const PCODdiet = lazy(() => import('../pages/MealPlans/SpecialConditions/PCOD'));
+const DiabetesMellitus = lazy(() => import('../pages/MealPlans/SpecialConditions/DiabetesMellitus'));
+const GlutenFreeDiet = lazy(() => import('../pages/MealPlans/SpecialConditions/GlutenFreeDiet'));
+const LactoseIntrolerent = lazy(() => import('../pages/MealPlans/SpecialConditions/LactoseIntrolerent'));
+const OtpPage = lazy(() => import('../pages/Account/Otp'));
+const CheckOut = lazy(() => import('../pages/CheckoutPage/CheckOut'));
+const Orders = lazy(() => import('../pages/Orderhistory/Orders'));
+const ForgotPasswordPage = lazy(() => import('../pages/Account/ForgotPassword'));
+const ShopByCategory = lazy(() => import('../components/SpecialShop/ShopByCategory'));
 
 export default function MainRoutes() {
     const [showRoutes, setShowRoutes] = useState(false);
@@ -61,47 +58,43 @@ export default function MainRoutes() {
     }, []);
 
     return showRoutes ? (
-        <Routes>
-            <Route element={<PublicRoutes />}>
-                <Route path="/signup" element={<SignUp />} />
-                <Route path="/signin" element={<SignIn />} />
-                <Route path="/otppage" element={<OtpPage />} />
-                <Route path='/forgot-password' element={<ForgotPasswordPage />} />
-                <Route path="/cart" element={<Cart />} />
-                <Route path="/productDetails" element={<ProductDetails />} />
-                <Route path="/shop" element={<Shop />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/superfoods" element={<ComboStore />} />
-                <Route path="/offer" element={<Offer />} />
-                <Route path="/premiumproducts" element={<PremiumProducts />} />
-                <Route path="/healthydelights" element={<HealthyDelights />} />
-                <Route path="/WeightsLoss" element={<WeightsLoss />} />
-                <Route path="/weightsGain" element={<Weightsgain />} />
-                <Route path="/weaning" element={<WeaningDiet />} />
-                <Route path="/schoolgoing" element={<SchoolKids />} />
-                <Route path="/adults" element={<AdultsDiet />} />
-                <Route path="/geriatric" element={<GeriatricDiet />} />
-                <Route path="/expectantmothers" element={<ExpectantMothersDiet />} />
-                <Route path="/lactatingmothers" element={<LactatingMothersDiet />} />
-                <Route path="/pcod" element={<PCODdiet />} />
-                <Route path="/diabetes-millets-diet" element={<DiabetesMellitus />} />
-                <Route path="/gluten-free-diet" element={<GlutenFreeDiet />} />
-                <Route path="/lactose-introlerent" element={<LactoseIntrolerent />} />
-                <Route path='/checkout' element={<CheckOut/>} />
-                <Route path='/orders' element={<Orders />} />
-                <Route path='/ShopByCategory' element={<ShopByCategory />} />
-
-            </Route>
-            <Route path="/" element={<Home />} />
-            <Route path="/home" element={<Home />} />
-
-
-            <Route element={<ProtectedRoutes />}>          
-                <Route path="/paymentgateway" element={<Payment />} />
-                <Route path="/profile" element={<Profile />} />          
-            </Route>
-        </Routes>
+        <Suspense fallback={<div>Loading...</div>}>
+            <Routes>
+                <Route element={<PublicRoutes />}>
+                    <Route path="/signup" element={<SignUp />} />
+                    <Route path="/signin" element={<SignIn />} />
+                    <Route path="/otppage" element={<OtpPage />} />
+                    <Route path='/forgot-password' element={<ForgotPasswordPage />} />
+                    <Route path="/cart" element={<Cart />} />
+                    <Route path="/productDetails" element={<ProductDetails />} />
+                    <Route path="/shop" element={<Shop />} />
+                    <Route path="/contact" element={<Contact />} />
+                    <Route path="/about" element={<About />} />
+                    <Route path="/offer" element={<Offer />} />
+                    <Route path="/WeightsLoss" element={<WeightsLoss />} />
+                    <Route path="/weightsGain" element={<Weightsgain />} />
+                    <Route path="/weaning" element={<WeaningDiet />} />
+                    <Route path="/schoolgoing" element={<SchoolKids />} />
+                    <Route path="/adults" element={<AdultsDiet />} />
+                    <Route path="/geriatric" element={<GeriatricDiet />} />
+                    <Route path="/expectantmothers" element={<ExpectantMothersDiet />} />
+                    <Route path="/lactatingmothers" element={<LactatingMothersDiet />} />
+                    <Route path="/pcod" element={<PCODdiet />} />
+                    <Route path="/diabetes-millets-diet" element={<DiabetesMellitus />} />
+                    <Route path="/gluten-free-diet" element={<GlutenFreeDiet />} />
+                    <Route path="/lactose-introlerent" element={<LactoseIntrolerent />} />
+                    <Route path='/checkout' element={<CheckOut />} />
+                    <Route path='/orders' element={<Orders />} />
+                    <Route path='/ShopByCategory' element={<ShopByCategory />} />
+                </Route>
+                <Route path="/" element={<Home />} />
+                <Route path="/home" element={<Home />} />
+                <Route element={<ProtectedRoutes />}>
+                    <Route path="/paymentgateway" element={<Payment />} />
+                    <Route path="/profile" element={<Profile />} />
+                </Route>
+                <Route path="*" element={<Home />} />
+            </Routes>
+        </Suspense>
     ) : null;
 }
-

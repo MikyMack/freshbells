@@ -1,25 +1,27 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, lazy, Suspense } from "react";
 import { useSelector, useDispatch } from 'react-redux';
 import Banner from "../../components/Banner/Banner";
 import BannerBottom from "../../components/Banner/BannerBottom";
-import BestSellers from "../../components/home/BestSellers/BestSellers";
-import NewArrivals from "../../components/home/NewArrivals/NewArrivals";
-import Sale from "../../components/home/Sale/Sale";
-import SpecialOffers from "../../components/home/SpecialOffers/SpecialOffers";
-import YearProduct from "../../components/home/YearProduct/YearProduct";
-import Features from "../../components/features/Features";
-import Offer from "../../components/home/OfferCard/Offer";
+import SpecialCase from "../../components/SpecialCase/SpecialCase";
 import Header from "../../components/home/Header/Header";
 import HeaderBottom from "../../components/home/Header/HeaderBottom";
-import Footer from "../../components/home/Footer/Footer";
-import FooterBottom from "../../components/home/Footer/FooterBottom";
 import HomeNutritionForm from "../../components/SpecialCase/HomeNutritionForm";
 import { fetchHomeDetails } from "../../actions/HomeActions";
 import Loader from "../../components/Loader/Loader";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import SpecialCase from "../../components/SpecialCase/SpecialCase";
 import "./Home.css"
+import Navigation from "../../components/home/Header/Navigation";
+
+const BestSellersLazy = lazy(() => import("../../components/home/BestSellers/BestSellers"));
+const NewArrivalsLazy = lazy(() => import("../../components/home/NewArrivals/NewArrivals"));
+const SaleLazy = lazy(() => import("../../components/home/Sale/Sale"));
+const SpecialOffersLazy = lazy(() => import("../../components/home/SpecialOffers/SpecialOffers"));
+const YearProductLazy = lazy(() => import("../../components/home/YearProduct/YearProduct"));
+const FeaturesLazy = lazy(() => import("../../components/features/Features"));
+const OfferLazy = lazy(() => import("../../components/home/OfferCard/Offer"));
+const FooterLazy = lazy(() => import("../../components/home/Footer/Footer"));
+const FooterBottomLazy = lazy(() => import("../../components/home/Footer/FooterBottom"));
 
 const Home = () => {
   const isLoading = useSelector(state => state.auth.isLoading);
@@ -50,7 +52,7 @@ const Home = () => {
   }
 
   return (
-    <div className="parent-div">
+    <div className="parent-div ">
       {showNutritionForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black opacity-50"></div>
@@ -61,25 +63,32 @@ const Home = () => {
       <Header />
       <HeaderBottom />
       <ToastContainer />
-      <div className="w-full mx-auto overflow-x-hidden scroll-smooth bg-[#EFFDEC]">
+      <div className="w-full mx-auto overflow-x-hidden scroll-smooth bg-[#EFFDEC] ">
         <Banner />
         <SpecialCase />
         <BannerBottom />
-        <div className="mx-auto px-4 mt-10">
-          <NewArrivals />
-        </div>
-        <Features />
-        <BestSellers />
-        <YearProduct />
-        <SpecialOffers />
-        <div className="overflow-hidden mb-8 shadow-lg">
-          <Sale />
-        </div>
-        <Offer />
+        <Suspense fallback={<div><Loader /></div>}>
+          <div className="mx-auto  mt-10">
+            <NewArrivalsLazy />
+          </div>
+          <FeaturesLazy />
+          <BestSellersLazy />
+          <YearProductLazy />
+          <SpecialOffersLazy />
+          <div className="overflow-hidden mb-8 shadow-lg">
+            <SaleLazy />
+          </div>
+          <OfferLazy />
+        </Suspense>
       </div>
-      <Footer />
-      <FooterBottom />
-    </div>
+      <Suspense fallback={<div>Loading...</div>}>
+        <FooterLazy />
+        <FooterBottomLazy />
+      </Suspense>
+      <div className="block lg:hidden overflow-hidden mt-24">
+        <Navigation />
+      </div>
+    </div> 
   );
 };
 

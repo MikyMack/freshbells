@@ -9,7 +9,7 @@ import { FaRupeeSign } from "react-icons/fa";
 import { addToCart, decreaseCart } from "../../redux/cartSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { FaPlus, FaMinus } from "react-icons/fa6";
-import { ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { BsPlus, BsDash } from "react-icons/bs";
 import { baseURL } from "../../constants";
@@ -18,6 +18,9 @@ import ReactPaginate from "react-paginate";
 import Image from "../../components/designLayouts/Image";
 import Heading from "../../components/home/Products/Heading";
 import Loader from "../../components/Loader/Loader";
+import { AddCart } from "../../actions/CartActions";
+import { BsFillCartCheckFill } from "react-icons/bs";
+import Navigation from "../../components/home/Header/Navigation";
 
 const ProductDetails = () => {
   const location = useLocation();
@@ -31,8 +34,10 @@ const ProductDetails = () => {
   const [mainImage, setMainImage] = useState(null);
   const [extraImages, setExtraImages] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [quantities, setQuantities] = useState({});
 
   const dispatch = useDispatch();
+  const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
   const cartItems = useSelector((state) => state.cart.cartItems);
   const navigate = useNavigate();
 
@@ -62,21 +67,72 @@ const ProductDetails = () => {
     setCurrentPage(event.selected);
   };
   const handleDecrease = (cartItem) => {
-    dispatch(decreaseCart(cartItem));
+    if (isAuthenticated) {
+      const newQuantities = {
+        ...quantities,
+        [cartItem.id]: Math.max(quantities[cartItem.id] - 1, 0)
+      };
+      setQuantities(newQuantities);
+      toast.error("item removed successfully")
+      dispatch(decreaseCart(cartItem));
+
+    } else {
+      dispatch(decreaseCart(cartItem));
+    }
   };
 
   const handleIncrease = (cartItem) => {
-    dispatch(addToCart(cartItem));
+    const newQuantities = {
+      ...quantities,
+      [cartItem.id]: (quantities[cartItem.id] || 0) + 1
+    };
+    setQuantities(newQuantities);
+
+    const cartData = {
+      product_id: cartItem.id,
+      volume: cartItem.volume,
+      unit: cartItem.unit,
+      quantity: newQuantities[cartItem.id],
+      price: cartItem.price
+    };
+    if (isAuthenticated) {
+      AddCart(cartData);
+      toast.success("Item added to cart successfully")
+    } else {
+      dispatch(addToCart(cartItem));
+      toast.success("Item added to cart successfully")
+    }
   };
 
   const handleBuy = (product) => {
-    dispatch(addToCart(product));
+    const newQuantities = {
+      ...quantities,
+      [product.id]: (quantities[product.id] || 0) + 1
+    };
+    setQuantities(newQuantities);
+
+    const cartData = {
+      product_id: product.id,
+      volume: product.volume,
+      unit: product.unit,
+      quantity: newQuantities[product.id],
+      price: product.price
+    };
+    if (isAuthenticated) {
+      AddCart(cartData);
+    } else {
+      dispatch(addToCart(product));
+    }
     navigate("/cart");
   };
 
   const getCartQuantity = (productId) => {
-    const cartItem = cartItems.find((item) => item.id === productId);
-    return cartItem ? cartItem.cartQuantity : 0;
+    if (isAuthenticated) {
+      return quantities[productId] || 0;
+    } else {
+      const cartItem = cartItems.find((item) => item.id === productId);
+      return cartItem ? cartItem.cartQuantity : 0;
+    }
   };
 
   const handleView = (id) => {
@@ -92,7 +148,7 @@ const ProductDetails = () => {
       <ToastContainer />
       <div className="bg-[#EFFDEC]">
         <div className="w-full mx-auto overflow-h">
-          <div className="max-w-container mx-auto px-4 py-7">
+          <div className="lg:container mx-auto px-4 py-7">
             <div className="xl:-mt-10 mb-4 -mt-7">
               <Breadcrumbs title="Product Details" />
             </div>
@@ -157,7 +213,7 @@ const ProductDetails = () => {
             <div className="bg-white font-body2 shadow-xl p-8 text-xl">
               {data.product.attributes?.about && (
                 <div className="mb-4">
-                  <h2 className="text-xl font-bold w-full bg-yellow-50 text-black text-center p-2 mb-2">About</h2> 
+                  <h2 className="text-xl font-bold w-full bg-yellow-50 text-black text-center p-2 mb-2">About</h2>
                   <ul className="list-disc pl-5 text-gray-700 ">
                     {data.product.attributes.about.split('●').filter(item => item.trim() !== '').map((item, index) => (
                       <li key={index}>{item.trim()}</li>
@@ -189,7 +245,7 @@ const ProductDetails = () => {
               )}
               {data.product.attributes?.usage && (
                 <div className="mb-4">
-                  <h2 className="text-xl font-bold w-full bg-yellow-50 text-black text-center p-2 mb-2">Usage</h2> 
+                  <h2 className="text-xl font-bold w-full bg-yellow-50 text-black text-center p-2 mb-2">Usage</h2>
                   <ul className="pl-5 text-gray-700">
                     {data.product.attributes.usage.split('●').filter(item => item.trim() !== '').map((item, index) => (
                       <li key={index}>{item.trim()}</li>
@@ -198,77 +254,80 @@ const ProductDetails = () => {
                 </div>
               )}
             </div>
-            <div className="container mx-auto pb-20 pt-10 font-body2">
-                    <Heading heading="Related Products" />
-                    <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4" data-aos="fade-up">
-                        {data.related_products.slice(offset, offset + itemsPerPage).map((product) => (
-                            <div key={product.id} className="p-2 ">
-                                <div className="relative overflow-hidden group max-w-full max-h-full hover:shadow-slate-700 shadow-xl">
-                                    <div className='flex flex-col items-center justify-center max-w-full max-h-full bg-gray-100'>
-                                        <div className="relative" onClick={() => handleView(product.id)}>
-                                            <Image className="md:w-[230px] md:h-[230px] xs:w-[140px] xs:h-[140px] object-contain rounded-full" imgSrc={`${baseURL}${product.image}`} />
-                                        </div>
-                                    </div>
-                                    <div className="py-1 flex flex-col gap-1 border-[1px] border-t-0 px-4 bg-white">
-                                        <div className="flex flex-col items-center justify-between font-titleFont ">
-                                            <h2 className="md:text-xl xl:text-xl lg:text-xl font-body2 xs:text-[10px] sm:text-[10px] text-primeColor font-bold">
-                                                {product.name}
-                                            </h2>
-                                            <p className="text-primeColor xl:text-[15px] lg:text-[15px]  md:text-[15px] sm:text-[9px] xs:text-[8px]  font-semibold flex pt-1 ">
-                                                <span className="md:pt-[2px] sm:pt-[3px] xs:pt-[3px] lg:pt-[4px] xl:text-[13px] lg:text-[13px] md:text-[15px] xs:text-[10px]">
-                                                    <FaRupeeSign />
-                                                </span>
-                                                <span className="line-through xs:text-[12px] md:text-[15px] text-gray-600">{product.price + 100}</span>
-                                                <span className="ml-1 xs:text-[12px] md:text-[15px]">{product.price}</span>
-                                            </p>
-                                        </div>
-                                        <div className="flex items-center justify-center">
-                                            <button className="md:text-xl xs:text-sm px-3 py-1   bg-gray-200 rounded-full hover:bg-gray-400" onClick={() => handleDecrease(product)}><FaMinus /></button>
-                                            <span className="mx-3 md:text-[20px] xs:text-[15px]">{getCartQuantity(product.id)}</span>
-                                            <button className="md:text-xl xs:text-sm px-3 py-1 bg-gray-200 rounded-full hover:bg-gray-400" onClick={() => handleIncrease(product)}><FaPlus /></button>
-                                        </div>
-                                        <div className="flex items-center justify-between">
-                                            <button onClick={() => handleBuy(product)} className="order-2 ml-2 hover:bg-primeColor bg-blue-600 text-white px-2 font-medium xs:text-[10px] md:text-[15px] lg:text-[20px] xl:text-[20px] hover:text-white rounded-2xl hover:rounded-none  hover:translate-y-1 transition-transform duration-500">
-                                                Buy Now
-                                            </button>
-                                            {product.quantity_variants.length > 0 ? (
-                                                <select className="order-1 mt-1 hover:bg-primeColor font-medium text-black hover:text-white rounded-xl xl:text-[20px] lg:text-[20px] md:text-[15px] xs:text-[7px] sm:text-[10px]">
-                                                    {product.quantity_variants.map((variant) => (
-                                                        <option key={variant.id} value={variant.volume} className="text-black bg-white font-medium">
-                                                            {variant.volume} {variant.unit}
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                            ) : (
-                                                <p className='text-sm font-body2'>no variants</p>
-                                            )}
-                                        </div>
-                                        <div className={`md:text-lg xl:text-xl lg:text-xl text-center sm:text-sm xs:text-[10px] ${product.in_stock === 0 || (product.in_stock > 0 && product.in_stock < 10) ? 'text-red-500' : 'text-green-500'}`}>
-                                            {product.in_stock === 0 ? "Out of Stock" : product.in_stock < 10 ? `Only ${product.in_stock} items left` : `${product.in_stock} items in stock`}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
+            <div className="lg:container px-4  pb-20 pt-10 font-body2">
+              <Heading heading="Related Products" />
+              <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2" data-aos="fade-up">
+                {data.related_products.slice(offset, offset + itemsPerPage).map((product) => (
+                  <div key={product.id} className="p-2 ">
+                    <div className="relative overflow-hidden group max-w-full max-h-full hover:shadow-slate-700 shadow-xl">
+                      <div className='flex flex-col items-center justify-center max-w-full max-h-full bg-gray-100'>
+                        <div className="relative" onClick={() => handleView(product.id)}>
+                          <Image className="md:w-[230px] md:h-[230px] w-full h-full  object-contain" imgSrc={`${baseURL}${product.image}`} />
+                        </div>
+                      </div>
+                      <div className="py-1 flex flex-col gap-1 border-[1px] border-t-0 px-4 bg-white">
+                        <div className="flex flex-col items-center justify-between font-titleFont ">
+                          <h2 className="md:text-xl xl:text-xl lg:text-xl font-body2 xs:text-[10px] sm:text-[10px] text-primeColor font-bold">
+                            {product.name}
+                          </h2>
+                          <p className="text-primeColor xl:text-[15px] lg:text-[15px]  md:text-[15px] sm:text-[9px] xs:text-[8px]  font-semibold flex items-center pt-1 ">
+                            <span className=" xl:text-[13px] lg:text-[13px] md:text-[15px] xs:text-[10px]">
+                              <FaRupeeSign />
+                            </span>
+                            <span className="line-through xs:text-[12px] md:text-[15px] text-gray-600">{product.price + 100}</span>
+                            <span className="ml-1 xs:text-[12px] md:text-[15px]">{product.price}</span>
+                          </p>
+                        </div>
+                        <div className="flex items-center justify-center">
+                          <button className="md:text-xl xs:text-sm px-3 py-1   bg-gray-200 rounded-full hover:bg-gray-400" onClick={() => handleDecrease(product)}><FaMinus /></button>
+                          <span className="mx-3 md:text-[20px] xs:text-[15px]">{getCartQuantity(product.id)}</span>
+                          <button className="md:text-xl xs:text-sm px-3 py-1 bg-gray-200 rounded-full hover:bg-gray-400" onClick={() => handleIncrease(product)}><FaPlus /></button>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <button onClick={() => handleBuy(product)} className="order-2 ml-2 py-1 hover:bg-primeColor text-black px-2 font-medium xs:text-[13px] sm:text-[15px] sml:text-[17px] md:text-[20px] lg:text-[20px] xl:text-[20px] hover:text-white rounded-2xl hover:rounded-none  hover:translate-y-1 transition-transform duration-500">
+                            <BsFillCartCheckFill />
+                          </button>
+                          {product.quantity_variants.length > 0 ? (
+                            <select className="order-1 mt-1 hover:bg-primeColor font-medium text-black hover:text-white rounded-xl xl:text-[20px] lg:text-[20px] md:text-[15px] xs:text-[7px] sm:text-[10px]">
+                              {product.quantity_variants.map((variant) => (
+                                <option key={variant.id} value={variant.volume} className="text-black bg-white font-medium">
+                                  {variant.volume} {variant.unit}
+                                </option>
+                              ))}
+                            </select>
+                          ) : (
+                            <p className='text-sm font-body2'>no variants</p>
+                          )}
+                        </div>
+                        <div className={`md:text-lg xl:text-xl lg:text-xl text-center sm:text-sm xs:text-[10px] ${product.in_stock === 0 || (product.in_stock > 0 && product.in_stock < 10) ? 'text-red-500' : 'text-green-500'}`}>
+                          {product.in_stock === 0 ? "Out of Stock" : product.in_stock < 10 ? `Only ${product.in_stock} items left` : `${product.in_stock} items in stock`}
+                        </div>
+                      </div>
                     </div>
-                    <ReactPaginate
-                        breakLabel="..."
-                        nextLabel="next >"
-                        onPageChange={handlePageClick}
-                        pageRangeDisplayed={3}
-                        pageCount={pageCount}
-                        previousLabel="< previous"
-                        renderOnZeroPageCount={null}
-                        containerClassName="pagination flex justify-center gap-1 items-center mt-5"
-                        activeClassName="bg-black text-white px-2 py-2 rounded-full"
-                        pageLinkClassName="px-3 py-2 hover:bg-lightGray rounded"
-                    />
-                </div>
+                  </div>
+                ))}
+              </div>
+              <ReactPaginate
+                breakLabel="..."
+                nextLabel=" >"
+                onPageChange={handlePageClick}
+                pageRangeDisplayed={3}
+                pageCount={pageCount}
+                previousLabel="< "
+                renderOnZeroPageCount={null}
+                containerClassName="pagination flex justify-center gap-1 items-center mt-5"
+                activeClassName="bg-black text-white px-2 py-2 rounded-full"
+                pageLinkClassName="px-3 py-2 hover:bg-lightGray rounded"
+              />
+            </div>
           </div>
         </div>
       </div>
       <Footer />
       <FooterBottom />
+      <div className="block lg:hidden overflow-hidden mt-24">
+        <Navigation />
+      </div>
     </>
   );
 };

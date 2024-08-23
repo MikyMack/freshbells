@@ -22,6 +22,8 @@ const Special_Categories='/products-by-category'
 const Product_Details='/products';
 const Send_Address='/address';
 const Checkout='/checkout';
+const Place_Order='/payment';
+const Checkout_Data='/place-order';
 
 export const API_URLS = {
   SIGNUP_API_PATH: `${Signup_Api_Path}`,
@@ -48,5 +50,6 @@ export const API_URLS = {
   PRODUCT_DETAILS:`${Product_Details}`,
   SUBMIT_ADDRESS:`${Send_Address}`,
   CHECKOUT:`${Checkout}`,
-  
+  PLACE_ORDER:`${Place_Order}`,
+  CHECKOUT_DATA:`${Checkout_Data}`
 };

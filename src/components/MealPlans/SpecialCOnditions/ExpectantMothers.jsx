@@ -1,29 +1,129 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Breadcrumbs from '../../pageProps/Breadcrumbs'
 import southIndianDiet from "../../../assets/images/specialconditions/PR-S.jpg"
 import northIndianDiet from "../../../assets/images/specialconditions/PR-N.jpg"
 import expectant from "../../../assets/images/specialconditions/expectantmother.png"
 import { FaCloudDownloadAlt } from "react-icons/fa";
-import { BsSuitHeartFill } from "react-icons/bs";
-import { FaShoppingCart, FaRupeeSign } from "react-icons/fa";
-import { FaCodeCompare } from "react-icons/fa6";
+import { FaRupeeSign } from "react-icons/fa";
 import { FaPlus, FaMinus } from "react-icons/fa6";
-import { data } from "../../../constants/index"
 import ReactPaginate from 'react-paginate'
 import Image from '../../designLayouts/Image'
-import Heading from '../../home/Products/Heading'
+import Heading from '../../home/Products/Heading';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useDispatch, useSelector } from 'react-redux'
+import { SpecialCategExpectantMothers } from '../../../actions/MealPlansActions'
+import { useNavigate } from 'react-router-dom'
+import { AddCart } from '../../../actions/CartActions'
+import { addToCart, decreaseCart } from '../../../redux/cartSlice';
+import { baseURL } from '../../../constants/index';
+import { BsFillCartCheckFill } from "react-icons/bs";
+import Loader from '../../Loader/Loader'
 
 export default function ExpectantMothers() {
     const [dietType, setDietType] = useState('southIndian');
     const itemsPerPage = 12
-    const [quantity, setQuantity] = useState(1);
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
+    const cartItems = useSelector((state) => state.cart.cartItems);
+    const isLoading = useSelector(state => state.auth.isLoading);
+    const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
+    const [quantities, setQuantities] = useState({});
+    const [products, setProducts] = useState([]);
     const [currentPage, setCurrentPage] = useState(0)
-    const pageCount = Math.ceil(data.length / itemsPerPage);
+    const [filteredProducts, setFilteredProducts] = useState([]);
+    const [selectedPriceRange, setSelectedPriceRange] = useState(null);
+    const [selectedDiet, setSelectedDiet] = useState(null);
+    const [selectedDisease, setSelectedDisease] = useState(null);
+    const [selectedSpecialCategory, setSelectedSpecialCategory] = useState(null);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [showFilters, setShowFilters] = useState(false);
+    const [selectedVariants, setSelectedVariants] = useState({});
+    const pageCount = Math.ceil(filteredProducts.length / itemsPerPage);
     const offset = currentPage * itemsPerPage;
 
-    const handlePageClick = (event) => {
-        setCurrentPage(event.selected);
+    const handleDecrease = (cartItem) => {
+        if (isAuthenticated) {
+            const newQuantities = {
+                ...quantities,
+                [cartItem.id]: Math.max(quantities[cartItem.id] - 1, 0)
+            };
+            setQuantities(newQuantities);
+            toast.error("item removed successfully")
+            dispatch(decreaseCart(cartItem));
+
+        } else {
+            dispatch(decreaseCart(cartItem));
+        }
     };
+    const handleIncrease = (cartItem) => {
+        const newQuantities = {
+            ...quantities,
+            [cartItem.id]: (quantities[cartItem.id] || 0) + 1
+        };
+        setQuantities(newQuantities);
+
+        const cartData = {
+            product_id: cartItem.id,
+            volume: selectedVariants[cartItem.id]?.volume || cartItem.volume,
+            unit: selectedVariants[cartItem.id]?.unit || cartItem.unit,
+            quantity: newQuantities[cartItem.id],
+            price: selectedVariants[cartItem.id]?.price || cartItem.price
+        };
+        if (isAuthenticated) {
+            AddCart(cartData);
+            toast.success("Item added to cart successfully")
+        } else {
+            dispatch(addToCart(cartData));
+            toast.success("Item added to cart successfully")
+        }
+    };
+    const handleBuy = (product) => {
+        const newQuantities = {
+            ...quantities,
+            [product.id]: (quantities[product.id] || 0) + 1
+        };
+        setQuantities(newQuantities);
+
+        const cartData = {
+            product_id: product.id,
+            volume: selectedVariants[product.id]?.volume || product.volume,
+            unit: selectedVariants[product.id]?.unit || product.unit,
+            quantity: newQuantities[product.id],
+            price: selectedVariants[product.id]?.price || product.price
+        };
+        if (isAuthenticated) {
+            AddCart(cartData);
+        } else {
+            dispatch(addToCart(cartData));
+        }
+        navigate("/cart");
+    };
+    const getCartQuantity = (productId) => {
+        if (isAuthenticated) {
+            return quantities[productId] || 0;
+        } else {
+            const cartItem = cartItems.find((item) => item.id === productId);
+            return cartItem ? cartItem.cartQuantity : 0;
+        }
+    };
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            dispatch({ type: 'SET_LOADING', payload: true });
+            try {
+                const data = await SpecialCategExpectantMothers();
+                setProducts(data.products || []);
+                setFilteredProducts(data.products || []);
+                dispatch({ type: 'SET_LOADING', payload: false });
+            } catch (error) {
+                console.error("Error fetching products", error);
+                dispatch({ type: 'SET_LOADING', payload: false });
+            }
+        };
+        fetchProducts();
+    }, []);
+
     const handleDownload = () => {
         const image = dietType === 'southIndian' ? southIndianDiet : northIndianDiet;
         const link = document.createElement('a');
@@ -33,13 +133,64 @@ export default function ExpectantMothers() {
         link.click();
         document.body.removeChild(link);
     };
+    const handlePageClick = (event) => {
+        setCurrentPage(event.selected);
+    };
+    const handlePriceRangeChange = (event) => {
+        setSelectedPriceRange(event.target.value);
+    };
 
+    const handleDietChange = (event) => {
+        setSelectedDiet(event.target.value);
+    };
+
+    const handleDiseaseChange = (event) => {
+        setSelectedDisease(event.target.value);
+    };
+
+    const handleSpecialCategoryChange = (event) => {
+        setSelectedSpecialCategory(event.target.value);
+    };
+
+    const handleVariantChange = (productId, variant) => {
+        setSelectedVariants({
+            ...selectedVariants,
+            [productId]: variant
+        });
+    };
+
+    useEffect(() => {
+        let filtered = products;
+        if (selectedDiet) {
+            filtered = filtered.filter(product => product.special_category_children.includes(selectedDiet));
+        }
+        if (selectedDisease) {
+            filtered = filtered.filter(product => product.special_category_children.includes(selectedDisease));
+        }
+        if (selectedSpecialCategory) {
+            filtered = filtered.filter(product => product.special_category_children.includes(selectedSpecialCategory));
+        }
+        if (selectedPriceRange) {
+            const [minPrice, maxPrice] = selectedPriceRange.split('-').map(Number);
+            filtered = filtered.filter(product => product.price >= minPrice && product.price <= maxPrice);
+        }
+        if (searchTerm) {
+            filtered = filtered.filter(product =>
+                product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                product.category_ids.includes(parseInt(searchTerm)) ||
+                product.price.toString().includes(searchTerm)
+            );
+        }
+        setFilteredProducts(filtered);
+    }, [ selectedDiet, selectedDisease, selectedSpecialCategory, selectedPriceRange, searchTerm, products]);
+    if(isLoading) return <Loader />
     return (
-        <div className='bg-[#EFFDEC]'>
-        <div className="max-w-container mx-auto px-4 pb-12">
+        <div className='bg-[#EFFDEC] font-body3'>
+            <ToastContainer />
+        <div className="xl:container mx-auto px-4 pb-12">
             <Breadcrumbs title="Diet Plan For Expectant Mothers" />
             <section>
-      <div className="container mx-auto px-4">
+      <div className="xl:container mx-auto px-4">
         <div className="flex flex-wrap mt-10">
           <div className="w-full lg:w-full px-4 mb-6 lg:mb-0"> 
             <h3 className="text-2xl font-semibold font-body2 mb-4"> DIET PLAN FOR EXPECTANT MOTHERS</h3>
@@ -67,86 +218,165 @@ export default function ExpectantMothers() {
         <div className="border-b my-10"></div>     
       </div> 
     </section>
-    <div className="container mx-auto pb-20 ">
-                    <Heading heading="Related Products" />
-                    <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4" data-aos="fade-up">
-                        {data.slice(offset, offset + itemsPerPage).map((product) => (
-                            <div key={product._id} className="p-2 ">
-                                <div className="relative overflow-hidden group max-w-full max-h-full hover:shadow-slate-700 shadow-xl">
-                                    <div className='flex flex-col items-center justify-center max-w-full max-h-full bg-gray-100'>
-                                        <div className="relative">
-                                            <Image className="md:w-[230px] md:h-[230px] xs:w-[140px] xs:h-[140px] object-cover rounded-full" imgSrc={product.img} />
-
-                                            <div className="absolute inset-0 flex items-center justify-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-transparent">
-                                                <button className="text-black p-2 bg-white rounded-full">
-                                                    <FaCodeCompare />
-                                                </button>
-                                                <button className="text-blue-600 p-2 bg-white rounded-full">
-                                                    <FaShoppingCart />
-                                                </button>
-                                                <button className=" p-2 bg-white text-red-600 rounded-full">
-                                                    <BsSuitHeartFill />
-                                                </button>
+    <div className="xl:container px-4 mx-auto pb-20 font-body3">
+          <Heading heading="Products For Expectant Mothers" />
+          <div className="flex flex-col items-start lg:flex-row">
+            <div className="w-full h-full lg:w-1/4 mb-4 lg:mb-0 bg-white p-5">
+              <button className="lg:hidden p-2 bg-primeColor text-white rounded w-full" onClick={() => setShowFilters(!showFilters)}>{showFilters ? "Close Filters" : "Filters"}</button>
+              <div className={`lg:block font-titleFont bg-white p-5 ${showFilters ? 'block' : 'hidden'}`}>
+                <h1 className="text-center font-medium underline">Filter by :</h1>
+                <div className='my-4'>
+                  <h3 className="font-bold text-gray-600">DIET</h3>
+                  <select onChange={handleDietChange} className="p-2 outline-none bg-yellow-50 font-medium rounded w-full">
+                    <option className="font-medium bg-primeColor text-white" value="">All Diets</option>
+                    <option className="font-medium bg-primeColor text-white" value="Keto Diet">Keto Diet</option>
+                    <option className="font-medium bg-primeColor text-white" value="Paleo Diet">Paleo Diet</option>
+                    <option className="font-medium bg-primeColor text-white" value="Gluten Free Diet">Gluten Free Diet</option>
+                    <option className="font-medium bg-primeColor text-white" value="High Fiber Diet">High Fiber Diet</option>
+                    <option className="font-medium bg-primeColor text-white" value="High Potassium Diet">High Potassium Diet</option>
+                    <option className="font-medium bg-primeColor text-white" value="Weight Loss Diet">Weight Loss Diet</option>
+                    <option className="font-medium bg-primeColor text-white" value="Weight Gain Diet">Weight Gain Diet</option>
+                    <option className="font-medium bg-primeColor text-white" value="High Calcium Diet">High Calcium Diet</option>
+                    <option className="font-medium bg-primeColor text-white" value="Low Carb Diet">Low Carb Diet</option>
+                    <option className="font-medium bg-primeColor text-white" value="High Protein High Fiber Diet">High Protein High Fiber Diet</option>
+                    <option className="font-medium bg-primeColor text-white" value="PCOD Diet">PCOD Diet</option>
+                    <option className="font-medium bg-primeColor text-white" value="Weight Management Diet">Weight Management Diet</option>
+                  </select>
+                  <hr />
+                </div>
+                <div className='my-4'>
+                  <h3 className="font-bold text-gray-600">DISEASE</h3>
+                  <select onChange={handleDiseaseChange} className="p-2 outline-none bg-yellow-50 font-medium rounded w-full">
+                    <option className="font-medium bg-primeColor text-white" value="">All Diseases</option>
+                    <option className="font-medium bg-primeColor text-white" value="Diabetes Mellitus">Diabetes Mellitus</option>
+                    <option className="font-medium bg-primeColor text-white" value="Post Operative">Post Operative</option>
+                    <option className="font-medium bg-primeColor text-white" value="Cancer">Cancer</option>
+                    <option className="font-medium bg-primeColor text-white" value="Liver Disease">Liver Disease</option>
+                    <option className="font-medium bg-primeColor text-white" value="Kidney Disease">Kidney Disease</option>
+                    <option className="font-medium bg-primeColor text-white" value="Cardio Vascular">Cardio Vascular</option>
+                    <option className="font-medium bg-primeColor text-white" value="Thyroid">Thyroid</option>
+                    <option className="font-medium bg-primeColor text-white" value="Infertility">Infertility</option>
+                    <option className="font-medium bg-primeColor text-white" value="Fatty Liver">Fatty Liver</option>
+                    <option className="font-medium bg-primeColor text-white" value="Hypertension">Hypertension</option>
+                    <option className="font-medium bg-primeColor text-white" value="Cholestrol">Cholestrol</option>
+                  </select>
+                  <hr />
+                </div>
+                <div className='my-4'>
+                  <h3 className="font-bold text-gray-600">SPECIAL CATEGORIES</h3>
+                  <select onChange={handleSpecialCategoryChange} className="p-2 outline-none bg-yellow-50 font-medium rounded w-full">
+                    <option className="font-medium bg-primeColor text-white" value="">All Special Categories</option>
+                    <option className="font-medium bg-primeColor text-white" value="Super Foods">Super Foods</option>
+                    <option className="font-medium bg-primeColor text-white" value="Premium Products">Premium Products</option>
+                    <option className="font-medium bg-primeColor text-white" value="Healthy Delights">Healthy Delights</option>
+                  </select>
+                  <hr />
+                </div>
+                <div className='my-4'>
+                  <h3 className="font-bold text-gray-600">PRICE RANGE</h3>
+                  <select onChange={handlePriceRangeChange} className="p-2 outline-none bg-yellow-50 font-medium rounded w-full">
+                    <option className="font-medium bg-primeColor text-white" value="">All Prices</option>
+                    <option className="font-medium bg-primeColor text-white" value="0-100">0-100</option>
+                    <option className="font-medium bg-primeColor text-white" value="100-300">100-300</option>
+                    <option className="font-medium bg-primeColor text-white" value="300-600">300-600</option>
+                    <option className="font-medium bg-primeColor text-white" value="600-1000">600-1000</option>
+                    <option className="font-medium bg-primeColor text-white" value="1000-10000">1000-10000</option>
+                  </select>
+                  <hr />
+                </div>
+                <div className='my-4'>
+                  <h3 className="font-bold text-gray-600">SEARCH PRODUCTS BY</h3>
+                  <input
+                    type="text"
+                    placeholder="Name,Id,Categories,Price..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="p-2 outline-none bg-yellow-50 font-semibold rounded w-full mb-2"
+                  />
+                  <hr />
+                </div>
+                <div>
+                  <button onClick={() => setCurrentPage(0)} className="p-2 bg-primeColor text-white font-medium hover:bg-green-900 rounded w-full">Search</button>
+                </div>
+              </div>
+            </div>
+            <div className="w-full lg:w-3/4  py-2">
+            <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4" data-aos="fade-up">
+                                {filteredProducts.slice(offset, offset + itemsPerPage).map((product) => {
+                                    const selectedVariant = selectedVariants[product.id] || product.quantity_variants[0];
+                                    return (
+                                        <div key={product.id} className="p-2 ">
+                                            <div className="relative overflow-hidden group max-w-full h-full hover:shadow-slate-700 shadow-xl">
+                                                <div className='flex flex-col items-center justify-center max-w-full max-h-full bg-gray-100'>
+                                                    <div className="relative">
+                                                        <Image className="md:w-[230px] md:h-[230px] xs:w-[140px] xs:h-[140px] object-contain" imgSrc={`${baseURL}${product.image}`} />
+                                                    </div>
+                                                </div>
+                                                <div className="py-1 flex flex-col border-[1px] border-t-0 px-2 h-full bg-white">
+                                                    <div className="flex flex-col items-center justify-between font-titleFont ">
+                                                        <h2 className="md:text-xl xl:text-xl lg:text-xl font-body2 xs:text-[10px] sm:text-[10px] text-primeColor font-normal">
+                                                            {product.name}
+                                                        </h2>
+                                                        <p className="text-primeColor xl:text-[15px] lg:text-[15px]  md:text-[15px] sm:text-[9px] xs:text-[8px]  font-semibold flex items-center pt-1 ">
+                                                            <span className=" xl:text-[10px] lg:text-[10px] md:text-[15px] xs:text-[10px]">
+                                                                <FaRupeeSign />
+                                                            </span>
+                                                            <span className="line-through text-gray-600">{(selectedVariants[product.id]?.price || product.price) + 100}</span>
+                                                            <span className="ml-1">{selectedVariants[product.id]?.price || product.price}</span>
+                                                        </p>
+                                                    </div>
+                                                    <div className="flex items-center justify-center">
+                                                        <button className="md:text-xl xs:text-sm px-3 py-1   bg-gray-200 rounded-full hover:bg-gray-400" onClick={() => handleDecrease(product)}><FaMinus /></button>
+                                                        <span className="mx-3 md:text-[20px] xs:text-[15px]">{getCartQuantity(product.id)}</span>
+                                                        <button className="md:text-xl xs:text-sm px-3 py-1 bg-gray-200 rounded-full hover:bg-gray-400" onClick={() => handleIncrease(product)}><FaPlus /></button>
+                                                    </div>
+                                                    <div className="flex items-center justify-between">
+                                                        <button onClick={() => handleBuy(product)} className="order-2 ml-2 hover:bg-primeColor text-primeColor px-3 py-2 font-medium xs:text-[13px] sm:text-[15px] sml:text-[17px] md:text-[20px] lg:text-[20px] xl:text-[20px] hover:text-white  hover:translate-y-1 transition-transform duration-500">
+                                                            <BsFillCartCheckFill />
+                                                        </button>
+                                                        {product.quantity_variants.length > 0 ? (
+                                                            <select className="order-1 mt-1 hover:bg-primeColor font-normal text-black hover:text-white rounded-xl xl:text-[15px] lg:text-[15px] md:text-[15px] xs:text-[10px] sm:text-[10px]" onChange={(e) => handleVariantChange(product.id, JSON.parse(e.target.value))}>
+                                                                {product.quantity_variants?.map((variant) => (
+                                                                    <option key={variant.id} value={JSON.stringify(variant)} className="text-black bg-white font-medium">
+                                                                        {variant.volume} {variant.unit}
+                                                                    </option>
+                                                                ))}
+                                                            </select>
+                                                        ) : (
+                                                            <p className='text-sm font-body2'>no variants</p>
+                                                        )}
+                                                    </div>
+                                                    <div className={`md:text-lg lg:text-xl sm:text-sm font-normal text-center xs:text-[10px] ${selectedVariant?.in_stock === 0 || (selectedVariant?.in_stock >= 0 && selectedVariant?.in_stock < 10) ? 'text-red-500' : 'text-green-500'}`}>
+                                                        {selectedVariant?.in_stock === 0 ? "Out of Stock" : selectedVariant?.in_stock < 10 ? `Only ${selectedVariant?.in_stock} ${selectedVariant?.unit} items left` : selectedVariant ? `${selectedVariant.in_stock} ${selectedVariant.unit} left in stock` : "Stock information not available"}
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div className="py-1 flex flex-col gap-1 border-[1px] border-t-0 px-4 bg-white">
-                                        <div className="flex flex-col items-center justify-between font-titleFont ">
-                                            <h2 className="md:text-xl xl:text-xl lg:text-xl xs:text-[10px] sm:text-[10px] text-primeColor font-bold">
-                                                {product.productName}
-                                            </h2>
-                                            <p className="text-primeColor xl:text-[15px] lg:text-[15px]  md:text-[15px] sm:text-[9px] xs:text-[8px]  font-semibold flex pt-1 ">
-                                                <span className="md:pt-[2px] sm:pt-[3px] xs:pt-[3px] lg:pt-[4px] xl:text-[13px] lg:text-[13px] md:text-[15px] xs:text-[10px]">
-                                                    <FaRupeeSign />
-                                                </span>
-                                                <span className="line-through xs:text-[12px] md:text-[15px] text-gray-600">{product.price}</span>
-                                                <span className="ml-1 xs:text-[12px] md:text-[15px]">{product.offerPrice}</span>
-                                            </p>
-                                        </div>
-                                        <div className="flex items-center justify-center">
-                                            <button className="md:text-xl xs:text-sm px-3 py-1   bg-gray-200 rounded-full hover:bg-gray-400" onClick={() => setQuantity(quantity - 1)}><FaMinus /></button>
-                                            <span className="mx-3 md:text-[20px] xs:text-[15px]">{quantity}</span>
-                                            <button className="md:text-xl xs:text-sm px-3 py-1 bg-gray-200 rounded-full hover:bg-gray-400" onClick={() => setQuantity(quantity + 1)}><FaPlus /></button>
-                                        </div>
-                                        <div className="flex items-center justify-between">
-                                            <button className="order-2 ml-2 hover:bg-primeColor bg-blue-600 text-white px-2 font-medium xs:text-[10px] md:text-[15px] lg:text-[20px] xl:text-[20px] hover:text-white rounded-2xl hover:rounded-none  hover:translate-y-1 transition-transform duration-500">
-                                                Buy Now
-                                            </button>
-                                            <select className="order-1 mt-1 hover:bg-primeColor font-medium text-black hover:text-white rounded-xl xl:text-[20px] lg:text-[20px] md:text-[15px] xs:text-[7px] sm:text-[10px]">
-                                                <option value="250g" className="text-black bg-white font-medium">250g</option>
-                                                <option value="500g" className="text-black bg-white font-medium">500g</option>
-                                                <option value="1kg" className="text-black bg-white font-medium">1kg</option>
-                                                <option value="5kg" className="text-black bg-white font-medium">5kg</option>
-                                            </select>
-                                        </div>
-                                        <div className={`md:text-lg xl:text-xl lg:text-xl sm:text-sm xs:text-[10px] ${product.stock === 0 || (product.stock > 0 && product.stock < 10) ? 'text-red-500' : 'text-green-500'}`}>
-                                            {product.stock === 0 ? "Out of Stock" : product.stock < 10 ? `Only ${product.stock} items left` : `${product.stock} items in stock`}
-                                        </div>
-                                    </div>
-                                </div>
+                                    );
+                                })}
                             </div>
-                        ))}
-                    </div>
-                    <ReactPaginate
-                        breakLabel="..."
-                        nextLabel="next >"
-                        onPageChange={handlePageClick}
-                        pageRangeDisplayed={5}
-                        pageCount={pageCount}
-                        previousLabel="< previous"
-                        renderOnZeroPageCount={null}
-                        containerClassName="pagination flex justify-center gap-3 items-center mt-5"
-                        activeClassName="bg-black text-white px-4 py-2 rounded-full"
-                        pageLinkClassName="px-3 py-2 hover:bg-lightGray rounded"
-                    />
-                </div>
+              <ReactPaginate
+                breakLabel="..."
+                nextLabel=">"
+                onPageChange={handlePageClick}
+                pageRangeDisplayed={3}
+                pageCount={pageCount}
+                previousLabel="<"
+                renderOnZeroPageCount={null}
+                containerClassName="pagination flex justify-center gap-1 items-center mt-5"
+                activeClassName="bg-black text-white px-1 py-1"
+                pageLinkClassName="px-3 py-2 hover:bg-lightGray rounded"
+              />
+            </div>
+          </div>
+        </div>
             <div className='w-full mb-8'>
                 <div className='flex justify-center space-x-4 mb-4'>
                     <button className={`py-2 px-4 rounded-lg ${dietType === 'southIndian' ? 'bg-primeColor hover:bg-black text-white font-semibold' : 'bg-gray-200'}`} onClick={() => setDietType('southIndian')}>South Indian Diet</button>
                     <button className={`py-2 px-4 rounded-lg ${dietType === 'northIndian' ? 'bg-primeColor hover:bg-black text-white font-semibold' : 'bg-gray-200'}`} onClick={() => setDietType('northIndian')}>North Indian Diet</button>
                 </div>
                 <div className="relative">
-                    <img className='object-contain' src={dietType === 'southIndian' ? southIndianDiet : northIndianDiet} alt={`${dietType} diet`} />
+                    <img className='object-cover w-full h-full' src={dietType === 'southIndian' ? southIndianDiet : northIndianDiet} alt={`${dietType} diet`} />
                     <button className="flex items-center py-2 px-4 bg-blue-500 hover:bg-blue-400 font-medium text-white rounded-lg  mt-4" onClick={handleDownload}><span className='mr-2'><FaCloudDownloadAlt /></span> Download Diet Image</button>
                 </div>
             </div>

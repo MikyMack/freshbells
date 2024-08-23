@@ -68,12 +68,12 @@ const handlePincodeSubmit = async () => {
     <div className="sticky top-0 z-50">
       <div className="bg-[#324c21] py-1 flex justify-between items-center ">
         <div className="flex-1 md:ml-52">
-          <p className=" font-medium font-body2 md:text-base sm:text-[10px] xs:text-[10px] text-center text-white"><span data-aos="zoom-in-right">"Nutritious Millets,</span><span data-aos="zoom-in-left"> Healthy Plans"</span></p>
+          <p className=" font-body3 md:text-base sm:text-[10px] xs:text-sm text-center text-white"><span data-aos="zoom-in-right">"Nutritious Millets,</span><span data-aos="zoom-in-left"> Healthy Plans"</span></p>
         </div>
-        <div className="px-4 flex items-center">
+        <div className="lg:px-4 sm:px-2 sml:px-3 flex items-center">
           {/* hidden for mobile devices */}
-          <p className="hidden md:block text-white sm:text-[9px] xs:text-[9px] lg:text-base font-semibold font-body2 cursor-pointer mr-2">English <span className="ml-1 font-serif"> | </span> </p>
-          <p className="text-white sm:text-[9px] xs:text-[9px] lg:text-base font-semibold font-body2 cursor-pointer" onClick={() => setPincodePopup(true)}>{serviceable ? (serviceable.city || "Delivery Unavailable") : "Check Pincode"} <span> 🚚 </span> </p>
+          <p className="hidden md:block text-white sm:text-[9px] xs:text-[9px] lg:text-base font-body3 cursor-pointer mr-2">English <span className="ml-1 font-serif"> | </span> </p>
+          <p className="text-white sm:text-[9px] xs:text-[9px] lg:text-base font-body3 cursor-pointer" onClick={() => setPincodePopup(true)}>{serviceable ? (serviceable.city || "Delivery Unavailable") : "Check Pincode"} <span> 🚚 </span> </p>
         </div>
       </div>
 
@@ -113,18 +113,18 @@ const handlePincodeSubmit = async () => {
 
               {showMenu && (
                 <ul className="hidden md:flex flex-row lg:gap-4">
-                  <li className={`hover:text-green-700 px-3 py-1 rounded-3xl  hover:rounded-none font-body2 mr-3 lg:text-xl md:text-md items-center font-semibold text-primeColor duration-500 hover:translate-y-1 ${location.pathname === "/" || location.pathname === "/home" ? "text-green-600 font-extrabold" : ""}`}>
+                  <li className={`hover:text-green-700 px-3 py-1 rounded-3xl  hover:rounded-none font-body3 mr-3 lg:text-xl md:text-md items-center font-semibold text-primeColor duration-500 hover:translate-y-1 ${location.pathname === "/" || location.pathname === "/home" ? "text-green-600 font-extrabold" : ""}`}>
                     <Link to="/"><p>Home </p>
                     </Link>
 
                   </li>
-                  <li className={`hover:text-green-700 px-3 py-1  rounded-3xl hover:rounded-none font-body2 mr-3 lg:text-xl md:text-md items-center text-primeColor font-semibold  duration-500 hover:translate-y-1 ${location.pathname === "/shop" ? "text-green-700 font-extrabold" : ""}`}>
+                  <li className={`hover:text-green-700 px-3 py-1  rounded-3xl hover:rounded-none font-body3 mr-3 lg:text-xl md:text-md items-center text-primeColor font-semibold  duration-500 hover:translate-y-1 ${location.pathname === "/shop" ? "text-green-700 font-extrabold" : ""}`}>
                     <Link to="/shop">
-                      <p>Combo Store </p>
+                      <p>Store </p>
                     </Link>
                   </li>
-                  <li className={`hover:text-green-700 px-3 py-1 rounded-3xl hover:rounded-none relative group font-body2 mr-3 lg:text-lg md:text-sm items-center cursor-pointer  duration-500 hover:translate-y-1 ${location.pathname.includes("meal-plans") ? "text-green-700 font-extrabold" : ""}`}>
-                    <p className={`flex font-body2 lg:text-xl md:text-md items-center text-primeColor font-semibold duration-500 hover:text-green-700 ${location.pathname.includes("WeightsLoss") || location.pathname.includes("weightsGain") || location.pathname.includes("teens") || location.pathname.includes("adults") ? "text-red-500 font-extrabold" : ""} `} onMouseEnter={() => { setShowHealthyDiets(false); setShowDietPlanForAge(false); setShowSPecialCateg(false); }} >Meal Plans<span className="group-hover:hidden"><IoMdArrowDropdown /></span><span className="hidden group-hover:inline"><IoMdArrowDropup /></span></p>
+                  <li className={`hover:text-green-700 px-3 py-1 rounded-3xl hover:rounded-none relative group font-body3 mr-3 lg:text-lg md:text-sm items-center cursor-pointer  duration-500 hover:translate-y-1 ${location.pathname.includes("meal-plans") ? "text-green-700 font-extrabold" : ""}`}>
+                    <p className={`flex font-body3 lg:text-xl md:text-md items-center text-primeColor font-semibold duration-500 hover:text-green-700 ${location.pathname.includes("WeightsLoss") || location.pathname.includes("weightsGain") || location.pathname.includes("weaning") || location.pathname.includes("schoolgoing") || location.pathname.includes("adults") || location.pathname.includes("geriatric") || location.pathname.includes("expectantmothers") || location.pathname.includes("lactatingmothers") || location.pathname.includes("pcod") || location.pathname.includes("diabetes-millets-diet") || location.pathname.includes("gluten-free-diet") || location.pathname.includes("lactose-introlerent") ? "text-green-600 font-extrabold" : ""} `} onMouseEnter={() => { setShowHealthyDiets(false); setShowDietPlanForAge(false); setShowSPecialCateg(false); }} >Meal Plans<span className="group-hover:hidden"><IoMdArrowDropdown /></span><span className="hidden group-hover:inline"><IoMdArrowDropup /></span></p>
                     <div ref={dropdownRef} className="absolute z-[9999] hidden group-hover:block w-[300px] -left-16 bg-gray-200 py-2 text-black shadow-md">
                       <div className="relative group">
                         <p className="flex items-center justify-center py-1 cursor-pointer lg:text-xl md:text-md font-semibold hover:text-green-700 text-center hover:bg-white" onMouseEnter={() => { setShowHealthyDiets(true); setShowDietPlanForAge(false); setShowSPecialCateg(false); }}>Healthy Diets</p>
@@ -146,8 +146,8 @@ const handlePincodeSubmit = async () => {
                           </div>
                         )}
                       </div>
-                      <div className="relative group">
-                        <NavLink to="/special-conditions" className="flex items-center lg:text-xl md:text-md justify-center py-1  font-semibold hover:text-green-700 text-center hover:bg-white" onMouseEnter={() => { setShowSPecialCateg(true); setShowDietPlanForAge(false); setShowHealthyDiets(false); }}>Special Conditions</NavLink>
+                      <div className="relative group"> 
+                        <p className="flex items-center lg:text-xl md:text-md justify-center py-1  font-semibold hover:text-green-700 text-center hover:bg-white" onMouseEnter={() => { setShowSPecialCateg(true); setShowDietPlanForAge(false); setShowHealthyDiets(false); }}>Special Conditions</p>
                         {
                           showSpecialCateg && (
                             <div className="absolute z-[9999] block w-[100%] bg-gray-300 py-2 text-black shadow-md right-full top-0 text-center">
@@ -164,13 +164,13 @@ const handlePincodeSubmit = async () => {
 
                     </div>
                   </li>
-                  <li className={`hover:text-green-700 px-3 py-1 rounded-3xl hover:rounded-none font-body2 mr-3  lg:text-xl md:text-md items-center text-primeColor  font-semibold  duration-500 hover:translate-y-1 ${location.pathname === "/about" ? "text-green-700 font-extrabold" : ""}`}>
+                  <li className={`hover:text-green-700 px-3 py-1 rounded-3xl hover:rounded-none font-body3 mr-3  lg:text-xl md:text-md items-center text-primeColor  font-semibold  duration-500 hover:translate-y-1 ${location.pathname === "/about" ? "text-green-700 font-extrabold" : ""}`}>
                     <NavLink to="/about" state={{ data: location.pathname.split("/")[1] || null }}>
                       <p >About </p>
                     </NavLink>
 
                   </li>
-                  <li className={`hover:text-green-700 px-3 py-1 rounded-3xl hover:rounded-none font-body2 mr-3  lg:text-xl md:text-md items-center text-primeColor  font-semibold  duration-500 hover:translate-y-1 ${location.pathname === "/contact" ? "text-green-700 font-extrabold" : ""}`}>
+                  <li className={`hover:text-green-700 px-3 py-1 rounded-3xl hover:rounded-none font-body3 mr-3  lg:text-xl md:text-md items-center text-primeColor  font-semibold  duration-500 hover:translate-y-1 ${location.pathname === "/contact" ? "text-green-700 font-extrabold" : ""}`}>
                     <NavLink to="/contact" state={{ data: location.pathname.split("/")[1] || null }}>
                       <p>Contact </p>
                     </NavLink>
@@ -189,35 +189,21 @@ const handlePincodeSubmit = async () => {
                     <div className="w-full h-full bg-white p-6">
                       <img src={logo1} alt="logo" className="w-32 pb-7" />
                       <ul className="text-gray-200 flex flex-col gap-2">
-                        <li className={`hover:text-red-500 px-3 py-1 rounded-3xl  hover:rounded-none font-body2 mr-3 lg:text-xl md:text-md items-center font-semibold text-primeColor duration-500 hover:translate-y-1 ${location.pathname === "/" || location.pathname === "/home" ? "text-red-500 font-extrabold" : ""}`}>
+                        <li className={`hover:text-red-500 px-3 py-1 rounded-3xl  hover:rounded-none font-body3 mr-3 lg:text-xl md:text-md items-center font-semibold text-primeColor duration-500 hover:translate-y-1 ${location.pathname === "/" || location.pathname === "/home" ? "text-red-500 font-extrabold" : ""}`}>
                           <Link to="/"><p>Home </p>
                           </Link>
 
                         </li>
-                        <li className={`hover:text-red-500 px-3 py-1  rounded-3xl hover:rounded-none font-body2 mr-3 lg:text-xl md:text-md items-center text-primeColor font-semibold  duration-500 hover:translate-y-1 ${location.pathname === "/shop" ? "text-red-500 font-extrabold" : ""}`}>
+                        <li className={`hover:text-red-500 px-3 py-1  rounded-3xl hover:rounded-none font-body3 mr-3 lg:text-xl md:text-md items-center text-primeColor font-semibold  duration-500 hover:translate-y-1 ${location.pathname === "/shop" ? "text-red-500 font-extrabold" : ""}`}>
                           <Link to="/shop">
                             <p>Shop </p>
                           </Link>
 
                         </li>
-                        <li className={`hover:text-red-500 px-3 py-1  rounded-3xl hover:rounded-none font-body2 mr-3 lg:text-xl md:text-md items-center text-primeColor font-semibold  duration-500 hover:translate-y-1 ${location.pathname === "/shop" ? "text-red-500 font-extrabold" : ""}`}>
-                          <Link to="/superfoods">
-                            <p>Super Foods </p>
-                          </Link>
-                        </li>
-                        <li className={`hover:text-red-500 px-3 py-1  rounded-3xl hover:rounded-none font-body2 mr-3 lg:text-xl md:text-md items-center text-primeColor font-semibold  duration-500 hover:translate-y-1 ${location.pathname === "/shop" ? "text-red-500 font-extrabold" : ""}`}>
-                          <Link to="/superfoods">
-                            <p>Premium Products</p>
-                          </Link>
-                        </li>
-                        <li className={`hover:text-red-500 px-3 py-1  rounded-3xl hover:rounded-none font-body2 mr-3 lg:text-xl md:text-md items-center text-primeColor font-semibold  duration-500 hover:translate-y-1 ${location.pathname === "/shop" ? "text-red-500 font-extrabold" : ""}`}>
-                          <Link to="/superfoods">
-                            <p>Healthy Delights</p>
-                          </Link>
-                        </li>
-                        <li className={`hover:text-red-500 px-3 py-1 rounded-3xl hover:rounded-none relative group font-body2 mr-3 lg:text-lg md:text-sm items-center cursor-pointer  duration-500 hover:translate-y-1 ${location.pathname.includes("meal-plans") ? "text-red-500 font-extrabold" : ""}`}>
+                  
+                        <li className={`hover:text-red-500 px-3 py-1 rounded-3xl hover:rounded-none relative group font-body3 mr-3 lg:text-lg md:text-sm items-center cursor-pointer  duration-500 hover:translate-y-1 ${location.pathname.includes("meal-plans") ? "text-red-500 font-extrabold" : ""}`}>
                           <p className={`flex font-body2 lg:text-xl md:text-md items-center text-primeColor font-semibold duration-500 hover:text-red-500 ${location.pathname.includes("WeightsLoss") || location.pathname.includes("weightGain") || location.pathname.includes("teens") || location.pathname.includes("adults") ? "text-red-500 font-extrabold" : ""} `} onMouseEnter={() => { setShowHealthyDiets(false); setShowDietPlanForAge(false); setShowSPecialCateg(false); }} >Meal Plans<span className="group-hover:hidden"><IoMdArrowDropdown /></span><span className="hidden group-hover:inline"><IoMdArrowDropup /></span></p>
-                          <div ref={dropdownRef} className="absolute z-0 hidden group-hover:block w-[200px] rounded-md bg-white py-2 text-black shadow-md">
+                          <div ref={dropdownRef} className="absolute z-0 hidden group-hover:block w-[150px] rounded-md bg-white py-2 text-black shadow-md">
                             <div className="relative group">
                               <p className="flex items-center justify-center py-1 cursor-pointer lg:text-xl md:text-md font-semibold hover:text-red-500 text-center hover:bg-gray-200" onMouseEnter={() => { setShowHealthyDiets(true); setShowDietPlanForAge(false); setShowSPecialCateg(false); }}>Healthy Diets</p>
                               {showHealthyDiets && (
@@ -256,13 +242,13 @@ const handlePincodeSubmit = async () => {
 
                           </div>
                         </li>
-                        <li className={`hover:text-red-500 px-3 py-1 rounded-3xl hover:rounded-none font-body2 mr-3  lg:text-xl md:text-md items-center text-primeColor  font-semibold  duration-500 hover:translate-y-1 ${location.pathname === "/about" ? "text-red-500 font-extrabold" : ""}`}>
+                        <li className={`hover:text-red-500 px-3 py-1 rounded-3xl hover:rounded-none font-body3 mr-3  lg:text-xl md:text-md items-center text-primeColor  font-semibold  duration-500 hover:translate-y-1 ${location.pathname === "/about" ? "text-red-500 font-extrabold" : ""}`}>
                           <NavLink to="/about" state={{ data: location.pathname.split("/")[1] || null }}>
                             <p >About </p>
                           </NavLink>
 
                         </li>
-                        <li className={`hover:text-red-500 px-3 py-1 rounded-3xl hover:rounded-none font-body2 mr-3  lg:text-xl md:text-md items-center text-primeColor  font-semibold  duration-500 hover:translate-y-1 ${location.pathname === "/contact" ? "text-red-500 font-extrabold" : ""}`}>
+                        <li className={`hover:text-red-500 px-3 py-1 rounded-3xl hover:rounded-none font-body3 mr-3  lg:text-xl md:text-md items-center text-primeColor  font-semibold  duration-500 hover:translate-y-1 ${location.pathname === "/contact" ? "text-red-500 font-extrabold" : ""}`}>
                           <NavLink to="/contact" state={{ data: location.pathname.split("/")[1] || null }}>
                             <p>Contact </p>
                           </NavLink>

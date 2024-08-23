@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Breadcrumbs from "../../components/pageProps/Breadcrumbs";
 import Header from "../../components/home/Header/Header";
 import HeaderBottom from "../../components/home/Header/HeaderBottom";
 import FooterBottom from "../../components/home/Footer/FooterBottom";
 import Footer from "../../components/home/Footer/Footer";
 import { MdCurrencyRupee } from "react-icons/md";
-import { ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useDispatch, useSelector } from "react-redux";
 import { IoIosArrowRoundBack } from "react-icons/io";
@@ -15,35 +15,54 @@ import imag from "../../assets/images/emptyCart.png";
 import { FaPlus, FaMinus } from "react-icons/fa6";
 import { baseURL } from "../../constants/index";
 import { FetchCart, AddCart, DeleteCart } from "../../actions/CartActions";
+import Navigation from "../../components/home/Header/Navigation";
+import Loader from "../../components/Loader/Loader";
 
 const Cart = () => {
   const navigate = useNavigate();
   const cart = useSelector(state => state.cart);
+  const isLoading = useSelector(state => state.auth.isLoading);
   const [fetchedCartItems, setFetchedCartItems] = useState([]);
-  // const [quantities, setQuantities] = useState({});
   const [shippingCharges, setShippingCharges] = useState(0)
   const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    dispatch(getTotals());
+  const fetchCartData = useCallback(() => {
+    dispatch({ type: 'SET_LOADING', payload: true });
     if (isAuthenticated) {
       FetchCart().then(response => {
         if (!response.status) {
           console.error("Failed to fetch cart:", response);
+          dispatch({ type: 'SET_LOADING', payload: false });
           return;
         }
         setFetchedCartItems(response.carts);
         setShippingCharges(response);
-      }).catch(error => console.error("Failed to fetch cart:", error));
+        dispatch({ type: 'SET_LOADING', payload: false });
+      }).catch(error => {
+        console.error("Failed to fetch cart:", error);
+        dispatch({ type: 'SET_LOADING', payload: false });
+      });
+    } else {
+      dispatch({ type: 'SET_LOADING', payload: false });
     }
-  }, [dispatch, isAuthenticated]);
+  }, [isAuthenticated, dispatch]);
+
+  useEffect(() => {
+    dispatch(getTotals());
+    fetchCartData();
+  }, [dispatch, fetchCartData]);
 
   const handleRemoveFromCart = (cartItem) => {
     if (isAuthenticated) {
+      dispatch({ type: 'SET_LOADING', payload: true });
       DeleteCart(cartItem.id).then(() => {
-        setFetchedCartItems(fetchedCartItems.filter(item => item.id !== cartItem.id));
-      }).catch(error => console.error("Failed to remove cart item:", error));
+        toast.error("Cart deleted successfully")
+        fetchCartData();
+      }).catch(error => {
+        console.error("Failed to remove cart item:", error);
+        dispatch({ type: 'SET_LOADING', payload: false });
+      });
     } else {
       dispatch(removeFromCart(cartItem));
     }
@@ -52,31 +71,36 @@ const Cart = () => {
   const handleDecrease = (cartItem) => {
     if (isAuthenticated) {
       const newQuantity = Math.max(cartItem.quantity - 1, 0);
-      const updatedCartItems = fetchedCartItems.map(item =>
-        item.id === cartItem.id ? { ...item, quantity: newQuantity } : item
-      );
-      setFetchedCartItems(updatedCartItems);
-      const cartData = {
-        product_id: cartItem.product_id,
-        volume: cartItem.variants[0].volume,
-        unit: cartItem.variants[0].unit,
-        quantity: newQuantity,
-        price: cartItem.variants_details[0].price
-      };
-      AddCart(cartData);
+      if (newQuantity === 0) {
+        handleRemoveFromCart(cartItem);
+      } else {
+        const cartData = {
+          product_id: cartItem.product_id,
+          volume: cartItem.variants[0].volume,
+          unit: cartItem.variants[0].unit,
+          quantity: newQuantity,
+          price: cartItem.variants_details[0].price
+        };
+        dispatch({ type: 'SET_LOADING', payload: true });
+        AddCart(cartData).then(() => {
+          fetchCartData();
+        }).catch(error => {
+          console.error("Failed to update cart item:", error);
+          dispatch({ type: 'SET_LOADING', payload: false });
+        });
+      }
     } else { 
-      dispatch(decreaseCart(cartItem));
+      if (cartItem.cartQuantity === 1) {
+        dispatch(removeFromCart(cartItem));
+      } else {
+        dispatch(decreaseCart(cartItem));
+      }
     }
   };
-
 
   const handleIncrease = (cartItem) => {
     if (isAuthenticated) {
       const newQuantity = (cartItem.quantity || 0) + 1;
-      const updatedCartItems = fetchedCartItems.map(item =>
-        item.id === cartItem.id ? { ...item, quantity: newQuantity } : item
-      );
-      setFetchedCartItems(updatedCartItems);
       const cartData = {
         product_id: cartItem.product_id,
         volume: cartItem.variants[0].volume,
@@ -84,7 +108,13 @@ const Cart = () => {
         quantity: newQuantity,
         price: cartItem.variants_details[0].price
       };
-      AddCart(cartData)
+      dispatch({ type: 'SET_LOADING', payload: true });
+      AddCart(cartData).then(() => {
+        fetchCartData();
+      }).catch(error => {
+        console.error("Failed to update cart item:", error);
+        dispatch({ type: 'SET_LOADING', payload: false });
+      });
     } else {
       dispatch(addToCart(cartItem));
     }
@@ -102,6 +132,11 @@ const Cart = () => {
 
   const handleCheckout = async (e) => {
     e.preventDefault();
+    const outOfStockItems = fetchedCartItems.filter(item => item.variants_details[0]?.in_stock === 0);
+    if (outOfStockItems.length > 0) {
+      toast.error("Out of stock, adding soon");
+      return;
+    }
     if (isAuthenticated) {
       navigate('/checkout');
     } else {
@@ -109,13 +144,14 @@ const Cart = () => {
     }
   };
 
+  if (isLoading) return <Loader />;
   return (
     <>
       <Header />
       <HeaderBottom />
       <ToastContainer />
       <div className="bg-[#EFFDEC]">
-        <div className="container mx-auto px-4">
+        <div className="lg:container mx-auto px-4">
           <div className="py-4">
             <Breadcrumbs title="My Cart" />
           </div>
@@ -136,7 +172,7 @@ const Cart = () => {
                   <div className="bg-[#bbe6b9] py-4">
                     <h1 className="md:text-2xl font-bold text-center">You have<span className="text-red-500"> {fetchedCartItems.length || 0}</span> items in your cart</h1>
                   </div>
-                  {fetchedCartItems.map((item, index) => (
+                  {fetchedCartItems?.map((item, index) => (
                     <React.Fragment key={item.id}>
                       <div className="flex flex-col items-center hover:bg-red-50 justify-center md:flex-row gap-4">
                         <div className="md:w-full flex md:flex-row xs:flex-col items-center">
@@ -147,7 +183,7 @@ const Cart = () => {
                             <p className="hover:text-gray-500 md:text-xl xs:text-sm text-gray-500"><span className="md:text-xl xs:text-lg font-normal text-primeColor">{item.name}</span></p>
                             <p className="hover:text-gray-500 md:text-xl xs:text-sm text-gray-500">Category : <span className="font-normal text-xl text-primeColor">Spices</span></p>
                             <p className="hover:text-gray-500 md:text-xl xs:text-sm text-gray-500">Quantity : <select className="order-1 mt-1 hover:bg-gray-400 font-normal font-body2 text-black hover:text-white">
-                              {item.variants_details.map((variant, index) => (
+                              {item.variants_details?.map((variant, index) => (
                                 <option key={index} value={`${variant.volume}g`} className="text-black bg-white md:text-xl xs:text-lg font-medium">{`${variant.volume} ${variant.unit}`}</option>
                               ))}
                             </select></p>
@@ -173,10 +209,10 @@ const Cart = () => {
                   ))}
                 </div>
                 <div className="w-full md:w-1/4 bg-white p-4 rounded-lg flex flex-col">
-                  <div className="flex flex-col justify-between items-center py-2">
-                    <div className="flex items-center">
+                  <div className="flex flex-col justify-between py-2">
+                    <div className="flex items-center justify-between">
                       <p className="flex items-center font-medium md:text-xl xs:text-sm">Shipping Amount : </p>
-                      <p className="flex items-center text-right md:text-[20px] font-medium"><span className="md:mt-[2px] xs:mt-[3px] lg:text-xl md:text-base xs:text-sm"><MdCurrencyRupee /></span>{shippingCharges.shipping_amount}</p>
+                      <p className="flex items-center md:text-[20px] font-medium"><span className="md:mt-[2px] xs:mt-[3px] lg:text-xl md:text-base xs:text-sm"><MdCurrencyRupee /></span>{shippingCharges.shipping_amount}</p>
                     </div>
                     <div className="flex items-center">
                       <p className="flex-1 font-medium md:text-xl xs:text-sm">Total Amount : </p>
@@ -188,7 +224,7 @@ const Cart = () => {
                       <button className="bg-black hover:bg-primeColor font-medium text-white px-full py-2 rounded mt-4 w-full">Proceed to Checkout</button>
                     </div>
                     <div className="flex justify-between items-center py-3 w-full">
-                      <button onClick={() => handleClearCart()} className="bg-red-600 py-1 px-2 rounded-md text-white font-medium hover:bg-red-500 ml-2">Clear Cart</button>
+                  
                       <Link to="/home" className="text-center">
                         <button className="flex items-center justify-center hover:text-blue-600 mr-2"><span className="mt-[2px] pr-1"><IoIosArrowRoundBack /></span>Continue Shopping</button>
                       </Link>
@@ -214,7 +250,7 @@ const Cart = () => {
                   <div className="bg-[#bbe6b9] py-4">
                     <h1 className="md:text-2xl font-bold text-center">You have<span className="text-red-500"> {cart.cartItems.length || 0}</span> items in your cart</h1>
                   </div>
-                  {cart.cartItems.map((cartItem, index) => (
+                  {cart.cartItems?.map((cartItem, index) => (
                     <React.Fragment key={cartItem.id}>
                       <div className="flex flex-col items-center hover:bg-red-50 justify-center md:flex-row gap-4">
                         <div className="md:w-full flex md:flex-row xs:flex-col items-center">
@@ -225,7 +261,7 @@ const Cart = () => {
                             <p className="hover:text-gray-500 md:text-xl xs:text-sm text-gray-500"><span className="md:text-xl xs:text-lg font-normal text-primeColor">{cartItem.name}</span></p>
                             <p className="hover:text-gray-500 md:text-xl xs:text-sm text-gray-500">Category : <span className="font-normal text-xl text-primeColor">{cartItem.category[0]}</span></p>
                             <p className="hover:text-gray-500 md:text-xl xs:text-sm text-gray-500">Quantity : <select className="order-1 mt-1 hover:bg-gray-400 font-normal font-body2 text-black hover:text-white">
-                              {cartItem.quantity_variants.map((variant, index) => (
+                              {cartItem.quantity_variants?.map((variant, index) => (
                                 <option key={index} value={`${variant.volume}g`} className="text-black bg-white md:text-xl xs:text-lg font-medium">{`${variant.volume} ${variant.unit}`}</option>
                               ))}
                             </select></p>
@@ -274,6 +310,9 @@ const Cart = () => {
       </div>
       <Footer />
       <FooterBottom />
+      <div className="block lg:hidden overflow-hidden mt-24">
+      <Navigation />
+      </div>
     </>
   );
 };

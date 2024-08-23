@@ -7,7 +7,7 @@ import Image from "../../designLayouts/Image";
 const YearProduct = () => {
   return (
     <Link to="/shop">
-      <div className="w-full   mb-20 bg-[#ffffff]  relative font-titleFont flex flex-col md:flex-row items-center justify-center">
+      <div className="w-full lg:container  mb-20 bg-[#ffffff]  relative font-titleFont flex flex-col md:flex-row items-center justify-center">
         <div className="w-full h-80 px-4 md:px-0 flex flex-col items-center gap-6  justify-center">
           <h1 className="text-3xl font-semibold text-primeColor" data-aos="fade-up">
             Best Meal Plans 

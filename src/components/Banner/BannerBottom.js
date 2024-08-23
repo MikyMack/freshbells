@@ -45,7 +45,7 @@ const BannerBottom = () => {
   return (
     <>
         <section className="py-5">
-          <div className="container mx-auto">
+          <div className="lg:container px-4 mx-auto">
             <div className="flex flex-wrap -mx-4">
               {features.map((item, inde) => (
                 <div key={item.id} className="w-full md:w-1/3 lg:w-1/3 px-4 mb-6">
@@ -53,7 +53,7 @@ const BannerBottom = () => {
                     <div className={`relative text-center p-8 bg-white hover:bg-yellow-100 transition-transform z-30 duration-700 h-full flex flex-col justify-between`}>
                       <img className="mx-auto object-contain lg:h-[350px]  w-full" src={item.img} alt="bg_picture" />
                       <div className="flex flex-col items-center justify-center transition-transform duration-700 ease-in-out mb-4">
-                        <h4 className=" md:text-2xl lg:text-3xl xs:text-lg font-normal font-body2 text-black mb-4 transition-transform duration-700 ease-in-out">{item.title}</h4>
+                        <h4 className=" md:text-2xl lg:text-3xl xs:text-lg font-normal font-body3 text-black mb-4 transition-transform duration-700 ease-in-out">{item.title}</h4>
                         <Link to={item.link}>
                           <span className="text-center hover:opacity-50 cursor-pointer"><FaArrowRight /></span>
                         </Link>
@@ -67,7 +67,7 @@ const BannerBottom = () => {
             </div>
           </div>
         </section>
-        <div className="py-10">
+        <div className="pt-10 xl:container">
           <Heading heading="Top Categories" />
           <Swiper
             spaceBetween={10}
@@ -75,38 +75,38 @@ const BannerBottom = () => {
             breakpoints={{
               // when window width is >= 320px
               320: {
-                slidesPerView: 2,
-                spaceBetween: 20
+                slidesPerView: 4,
+                spaceBetween: 10
               },
               // when window width is >= 480px
-              480: {
-                slidesPerView: 2,
-                spaceBetween: 30
+              425: { 
+                slidesPerView: 5,
+                spaceBetween: 10
               },
               // when window width is >= 640px
               640: {
                 slidesPerView: 4,
-                spaceBetween: 40
+                spaceBetween: 10
               },
               // when window width is >= 768px
               768: {
-                slidesPerView: 4,
-                spaceBetween: 20
+                slidesPerView: 8, 
+                spaceBetween: 10
               },
               // when window width is >= 1024px
               1024: {
-                slidesPerView: 6,
-                spaceBetween: 30
+                slidesPerView: 10,
+                spaceBetween: 10
               },
               // when window width is >= 1280px
               1280: {
-                slidesPerView: 8,
-                spaceBetween: 20
+                slidesPerView: 10,
+                spaceBetween: 10
               },
               // when window width is >= 1536px
               1536: {
-                slidesPerView: 8,
-                spaceBetween: 20
+                slidesPerView: 10,
+                spaceBetween: 10
               }
             }}
           >
@@ -115,24 +115,23 @@ const BannerBottom = () => {
                 <SwiperSlide key={cat.id}>
                   <div
                     className="w-full p-2 h-full group"
-                   
                   >
                     <div
                       key={index}
                       data-aos="fade-up"
                       data-aos-delay={`${index * 100}`}
-                      className="hover:bg-[#9bad9a] hover:text-white rounded-lg bg-white shadow-md text-black relative duration-high group max-w-[300px] flex flex-col justify-center items-center"
+                      className="hover:border bg-transparent text-black relative duration-high group  flex flex-col justify-center items-center"
                     >
                       <img
                         src={`${baseURL}${cat.image}`}
                         alt={`Category ${index + 1}`}
-                        className="object-cover w-[100px] p-2 h-[100px] cursor-pointer transition-transform duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-3"
+                        className="object-contain w-20 p-2 h-20 rounded-full cursor-pointer transition-transform duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-3"
                         onError={(e) => {
                           e.target.onerror = null;
                           e.target.src = `${placehold}`;
                         }}
                       />
-                      <p className="text-center mt-1 pb-2 text-xl font-body2 font-semibold text-primeColor" style={{ color: 'inherit' }}>
+                      <p className="text-center mt-1 text-sm font-body3 font-normal text-primeColor lowercase" style={{ color: 'inherit' }}>
                         {cat.name}
                       </p>
                     </div>

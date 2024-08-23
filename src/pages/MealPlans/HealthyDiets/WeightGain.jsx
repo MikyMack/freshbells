@@ -4,6 +4,7 @@ import HeaderBottom from '../../../components/home/Header/HeaderBottom'
 import Footer from '../../../components/home/Footer/Footer'
 import FooterBottom from '../../../components/home/Footer/FooterBottom'
 import WeightGa from "../../../components/MealPlans/HealthyDiets/WeightGain"
+import Navigation from '../../../components/home/Header/Navigation'
 
 export default function WeightsGain() {
   return (
@@ -13,6 +14,9 @@ export default function WeightsGain() {
       <WeightGa />
       <Footer />
       <FooterBottom />
+      <div className="block lg:hidden overflow-hidden mt-24">
+      <Navigation />
+      </div>
       </div>
   )
 }

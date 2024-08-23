@@ -4,6 +4,7 @@ import HeaderBottom from "../../components/home/Header/HeaderBottom";
 import Footer from "../../components/home/Footer/Footer";
 import FooterBottom from "../../components/home/Footer/FooterBottom";
 import PaymentDO from "../../components/Payment/Payment";
+import Navigation from "../../components/home/Header/Navigation";
 
 const Payment = () => {
   return (
@@ -13,6 +14,9 @@ const Payment = () => {
        <PaymentDO />
        <Footer />
        <FooterBottom />
+       <div className="block lg:hidden overflow-hidden mt-24">
+        <Navigation />
+      </div>
     </div>
   );
 };

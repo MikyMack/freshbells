@@ -3,13 +3,14 @@ module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
-      maxWidth: {
-        container: "1440px",
+      container: {
+        center: true,
+        padding: '4rem',
       },
       screens: {
         xs: "320px",
         sm: "375px",
-        sml: "500px",
+        sml: "425px",
         md: "667px",
         mdl: "768px",
         lg: "960px",
@@ -17,12 +18,9 @@ module.exports = {
         xl: "1280px",
       },
       fontFamily: {
-        bodyFont: ["DM Sans", "sans-serif"],
-        titleFont: ["Poppins", "sans-serif"],
-        body: ["Abril Fatface"],
-        body1:["Abril Fatface"],
-        body3:["Abril Fatface"],
-        body2:["Abril Fatface"], 
+
+        titleFont: ["Rubik", "sans-serif"],
+        body3:["Rubik", "sans-serif"],
       },
       colors: {
         primeColor: "#163020", 

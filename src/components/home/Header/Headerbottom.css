@@ -282,3 +282,8 @@
         min-width: 150px; /* Full width on small screens */
     }
 }
+@media (max-width: 320px) {
+    .dropdown-content {
+        min-width: 120px; /* Full width on small screens */
+    }
+}

@@ -7,10 +7,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { TypeAnimation } from "react-type-animation";
 import "./Headerbottom.css";
-import { data } from "../../../constants/index";
+import { baseURL } from "../../../constants";
 import { toast } from "react-toastify";
 import { SpecialCateg } from "../../../actions/HomeActions";
 import { ShopDetails } from "../../../actions/ShopActions";
+import { FetchCart } from "../../../actions/CartActions";
+import { getTotals } from "../../../redux/cartSlice";
+import { ComboStore } from "../../../actions/ShopActions";
 
 const HeaderBottom = () => {
   const { cartTotalQuantity } = useSelector((state) => state.cart);
@@ -18,16 +21,31 @@ const HeaderBottom = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [show, setShow] = useState(false);
+  const [fetchedCartItems, setFetchedCartItems] = useState([]);
   const [showUser, setShowUser] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [speciCateg, setSpeciCateg] = useState([]);
+  const [allProducts, setAllProducts] = useState([]);
 
   const handleLogout = (e) => {
     e.preventDefault();
     dispatch({ type: 'LOGOUT', payload: true });
     toast.error("Successfully logged out");
   };
+
+  useEffect(() => {
+    dispatch(getTotals());
+    if (isAuthenticated) {
+      FetchCart().then(response => {
+        if (!response.status) {
+          console.error("Failed to fetch cart:", response);
+          return;
+        }
+        setFetchedCartItems(response.carts);
+      }).catch(error => console.error("Failed to fetch cart:", error));
+    }
+  }, [dispatch, isAuthenticated]);
 
   useEffect(() => {
     async function fetchSpecialCateg() {
@@ -42,8 +60,19 @@ const HeaderBottom = () => {
   }, []);
 
   useEffect(() => {
-    const spans = document.querySelectorAll('.word span');
+    const fetchAllProducts = async () => {
+      try {
+        const details = await ComboStore();
+        setAllProducts(details.products);
+      } catch (error) {
+        console.error('Failed to fetch all products', error);
+      }
+    };
+    fetchAllProducts();
+  }, []);
 
+  useEffect(() => {
+    const spans = document.querySelectorAll('.word span');
     spans.forEach((span, idx) => {
       span.addEventListener('click', (e) => {
         e.target.classList.add('active');
@@ -63,8 +92,11 @@ const HeaderBottom = () => {
     setSearchValue(value);
 
     if (value) {
-      const results = data.filter((product) =>
-        product.productName.toLowerCase().includes(value.toLowerCase())
+      const results = allProducts.filter((product) =>
+        product.name.toLowerCase().includes(value.toLowerCase()) ||
+        product.category_ids.includes(parseInt(value)) ||
+        (product.subcategories && product.subcategories.some(sub => sub.name.toLowerCase().includes(value.toLowerCase()))) ||
+        (product.specialCategories && product.specialCategories.some(spl => spl.name.toLowerCase().includes(value.toLowerCase())))
       );
       setSearchResults(results);
     } else {
@@ -97,7 +129,7 @@ const HeaderBottom = () => {
             <button onClick={() => setShow(!show)} className="bg-white transition-all py-2 px-4 rounded-2xl hover:bg-green-300 hover:rounded-md flex items-center gap-3 group hover:scale-105 duration-300">
               <MdMenuOpen className="w-5 h-5 text-black group-hover:animate-pulse" />
             </button>
-            <div className="word text-white ">
+            <div className="word text-white font-body3"> 
               {"Shop by Category".split("").map((char, index) => (
                 <span key={`char-${index}`} className={`char${index + 1}`}>{char === " " ? "\u00A0" : char}</span>
               ))}
@@ -111,7 +143,7 @@ const HeaderBottom = () => {
               >
                 {speciCateg && speciCateg.length > 0 ? (
                   speciCateg.map((item) => (
-                    <li key={item.id} className="dropdown px-4 py-1 font-body2 font-semibold md:text-xl xs:text-lg  border-b-[1px] border-b-gray-400 hover:border-b-black hover:text-black duration-300 cursor-pointer">
+                    <li key={item.id} className="dropdown px-4 py-1 font-body3 font-semibold md:text-xl xs:text-lg  border-b-[1px] border-b-gray-400 hover:border-b-black hover:text-black duration-300 cursor-pointer">
                       {item.name}
                       <div className="dropdown-content text-center bg-gray-300  w-full py-4 ">
                         {item.children && item.children.length > 0 ? (
@@ -145,7 +177,7 @@ const HeaderBottom = () => {
               onChange={handleSearchChange}
             />
             {!searchValue && (
-              <span className="absolute inset-0 flex items-center px-6 pointer-events-none font-body2 font-medium text-[#464646]">
+              <span className="absolute inset-0 flex items-center px-6 pointer-events-none font-body3 font-medium text-[#464646]">
                 <TypeAnimation
                   sequence={[
                     'Search for millets',
@@ -174,15 +206,17 @@ const HeaderBottom = () => {
           </div>
           {/* Search Results */}
           {searchResults.length > 0 && (
-            <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-full lg:w-1/3 bg-white shadow-lg z-50">
+            <div className="absolute top-full left-1/2 lg:ml-10 transform -translate-x-1/2 w-full lg:w-1/3 bg-white shadow-lg z-50 h-screen overflow-y-auto">
               <ul>
                 {searchResults.map((result, index) => (
-                  <li key={index} className="flex items-center justify-start p-2 border-b border-gray-200 hover:bg-gray-100">
-                    <Link to={`/product/${result._id}`} className="flex items-center">
-                      <img src={result.img} alt={result.productName} className="w-10 h-10 mr-4" />
-                      <span className="font-medium">{result.productName}</span>
+                  <li key={index} className="flex justify-between p-2 border-b border-gray-200 hover:bg-gray-100">
+                    <Link to={`/productDetails`} state={{ productId: result.id }} className="flex items-center justify-between w-full">
+                      <img
+                        className="w-32 h-32 object-contain cursor-pointer" 
+                        src={`${baseURL}${result.image}`} alt="img"
+                      />
+                      <span className="font-medium">{result.name}</span>
                     </Link>
-                    <br />
                   </li>
                 ))}
               </ul>
@@ -230,7 +264,7 @@ const HeaderBottom = () => {
                 <button className="hover:bg-green-300 bg-white transition-all py-[7px] px-4 rounded-2xl hover:rounded-md flex items-center gap-3 group hover:scale-105 duration-300">
                   <FaShoppingCart className="text-primeColor" />
                   <span className="absolute font-body1 top-0 -right-2 group-hover:bg-white group-hover:text-primeColor text-xs w-4 h-4 flex items-center text-center justify-center rounded-full font-semibold bg-green-300">
-                    {cartTotalQuantity}
+                    {isAuthenticated ? fetchedCartItems.length : cartTotalQuantity}
                   </span>
                 </button>
               </div>
@@ -243,4 +277,3 @@ const HeaderBottom = () => {
 };
 
 export default HeaderBottom;
-

@@ -83,3 +83,12 @@ export const DietPlansForSchoolGoing=async()=>{
         throw error;
     }
 }
+export const DietPlansForAdults=async()=>{
+    try {
+        const response=await axios.get(API_URLS.ADULTS);
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching meal plans weight gain");
+        throw error;
+    }
+}

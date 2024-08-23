@@ -9,6 +9,7 @@ import Header from "../../components/home/Header/Header";
 import HeaderBottom from "../../components/home/Header/HeaderBottom";
 import Footer from "../../components/home/Footer/Footer";
 import FooterBottom from "../../components/home/Footer/FooterBottom";
+import Navigation from "../../components/home/Header/Navigation";
  
 const About = () => {
   const location = useLocation();
@@ -64,29 +65,29 @@ const About = () => {
 <>
 <Header />
     <HeaderBottom />
-    <div className="bg-[#EFFDEC]">
-    <div className="lg:container mx-auto md:container px-5 overflow-hidden ">    
+    <div className="bg-[#EFFDEC] font-body3">
+    <div className="lg:container mx-auto md:container px-4 overflow-hidden ">    
      <Breadcrumbs title="About Us" prevLocation={prevLocation} />
      <section className="inner-section about-company">
       <div>
         <div className="flex flex-col lg:flex-row items-center">
           <div className="lg:w-1/2 lg:pr-8">
             <div className="about-content">
-              <h2 className="text-xl lg:text-xl sm:text-lg font-bold font-body2 text-primeColor mb-4">Our new, premier brand Fresh Bells focus on developing and promoting a natural, organic and highly nutritious foods as a solution for life style diseases and wellness care. We believe in promoting health in our communities through sustainable products; acting sustainably and ethically as a business.</h2>
+              <h2 className="text-xl lg:text-xl sm:text-lg bg-white p-3 shadow-lg font-bold font-body2 text-primeColor mb-4">Our new, premier brand Fresh Bells focus on developing and promoting a natural, organic and highly nutritious foods as a solution for life style diseases and wellness care. We believe in promoting health in our communities through sustainable products; acting sustainably and ethically as a business.</h2>
               <p className="text-primeColor font-body2 text-lg">We freshly source produces from purely known farmers, suppliers or groups who are following Organic or natural farming practices after visiting their farms and verifying their produces. We carefully pack the produce in a completely hygienic environment without losing their freshness and make sure to deliver it to your doorstep promptly. We offer food items that are healthy and natural like diet foods, pulses, cereals, seeds, rice, dried fruits, value added products etc. The usage of all our products makes your diet wholesome and tasty.</p>
             </div>
             <ul className="about-list mt-6 lg:mt-8 flex flex-row items-center justify-center gap-2">
-              <li className="w-full lg:w-1/2 mb-4 lg:mb-0 bg-white text-center rounded-3xl">
+              <li className="w-full lg:w-1/2 mb-4 py-2 lg:mb-0 bg-white text-center ">
                 <h3 className="text-2xl font-bold text-primeColor ">{registeredUsers}</h3>
-                <h6 className="text-lg text-primeColor font-body1 font-semibold">registered users</h6>
+                <h6 className="text-lg text-red-500 font-body1 font-semibold">registered users</h6>
               </li>
-              <li className="w-full lg:w-1/2 mb-4 lg:mb-0 bg-white text-center rounded-3xl">
+              <li className="w-full lg:w-1/2 mb-4 py-2 lg:mb-0 bg-white text-center ">
                 <h3 className="text-2xl font-bold text-gray-800">{visitors}</h3>
-                <h6 className="text-lg text-primeColor font-body1 font-semibold">per day visitors</h6>
+                <h6 className="text-lg text-blue-500 font-body1 font-semibold">per day visitors</h6>
               </li>
-              <li className="w-full lg:w-1/2 mb-4 lg:mb-0 bg-white text-center rounded-3xl">
+              <li className="w-full lg:w-1/2 mb-4 py-2 lg:mb-0 bg-white text-center ">
                 <h3 className="text-2xl font-bold text-gray-800">{totalProducts}</h3>
-                <h6 className="text-lg text-primeColor font-body1 font-semibold">total products</h6>
+                <h6 className="text-lg text-yellow-500 font-body1 font-semibold">total products</h6>
               </li>
             </ul>
           </div>
@@ -105,6 +106,9 @@ const About = () => {
   </div>
   <Footer />
   <FooterBottom />
+  <div className="block lg:hidden overflow-hidden mt-24">
+      <Navigation />
+      </div>
   </>
   );
 };

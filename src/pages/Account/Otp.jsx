@@ -147,7 +147,6 @@ const OtpPage = () => {
                   placeholder="Enter your OTP"
                 />
               </div> 
-
               <button
                 type="submit"
                 className="bg-primeColor hover:bg-black text-gray-200 hover:text-white cursor-pointer w-full text-base font-medium h-10 rounded-md duration-300"

@@ -51,3 +51,22 @@ export const Get_Address = async () => {
     throw error;
   }
 }
+export const PlaceOrder= async(data)=>{
+  try {
+    const response=await axios.post(API_URLS.PLACE_ORDER,data);
+    return response.data;
+  } catch (error) {
+    console.error("Error sending order details", error);
+    throw error;
+  }
+}
+
+export const CheckoutData=async(data)=>{
+   try {
+     const response=await axios.post(API_URLS.CHECKOUT_DATA,data)
+     return response.data;
+   } catch (error) {
+    console.error("Error sending checkout data", error);
+    throw error;
+   }
+}

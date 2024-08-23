@@ -7,6 +7,7 @@ import HeaderBottom from "../../components/home/Header/HeaderBottom";
 import { FaPhoneSquareAlt } from "react-icons/fa";
 import { MdAttachEmail } from "react-icons/md";
 import { FaLocationDot } from "react-icons/fa6";
+import Navigation from "../../components/home/Header/Navigation";
 
 const Contact = () => {
 
@@ -15,10 +16,10 @@ const Contact = () => {
     <>
      <Header />
     <HeaderBottom />
-    <div className="p-5 bg-[#EFFDEC]" >
+    <div className=" xl:container p-5 bg-[#EFFDEC] font-body3" >
     <Breadcrumbs title="Contact Us"/>
     <section>
-      <div className="container mx-auto px-4">
+      <div className=" mx-auto px-4">
         <div className="flex flex-wrap -mx-4">
           <div className="w-full md:w-1/2 px-4 mb-12 md:mb-0 animate-fadeInUp">
             <h5 className="text-lg font-semibold mb-6">
@@ -61,21 +62,21 @@ const Contact = () => {
                 {/* Form elements */}
                 <div className="space-y-4">
                   <div className="form-group">
-                    <input id="name" name="name" type="text" placeholder="Your Name *" required className="w-full p-3 border border-gray-300 rounded-lg" />
+                    <input id="name" name="name" type="text" placeholder="Your Name *" required className="w-full p-3 border border-gray-300 rounded-lg outline-none" />
                   </div>
                   <div className="flex flex-wrap -mx-2">
                     <div className="w-full md:w-1/2 px-2 form-group">
-                      <input id="email" name="email" type="email" placeholder="Your Email *" required className="w-full p-3 border border-gray-300 rounded-lg" />
+                      <input id="email" name="email" type="email" placeholder="Your Email *" required className="w-full p-3 border border-gray-300 rounded-lg outline-none" />
                     </div>
                     <div className="w-full md:w-1/2 px-2 form-group">
-                      <input id="phone" name="phone" type="text" placeholder="Your Number *" required className="w-full p-3 border border-gray-300 rounded-lg" />
+                      <input id="phone" name="phone" type="text" placeholder="Your Number *" required className="w-full p-3 border border-gray-300 rounded-lg outline-none" />
                     </div>
                   </div>
                   <div>
-                    <input id="subject" name="subject" type="text" placeholder="Subject *" required className="w-full p-3 border border-gray-300 rounded-lg" />
+                    <input id="subject" name="subject" type="text" placeholder="Subject *" required className="w-full p-3 border border-gray-300 rounded-lg outline-none" />
                   </div>
                   <div>
-                    <textarea name="message" id="message" cols="30" rows="4" placeholder="Message *" required className="w-full p-3 border border-gray-300 rounded-lg"></textarea>
+                    <textarea name="message" id="message" cols="30" rows="4" placeholder="Message *" required className="w-full p-3 border border-gray-300 rounded-lg outline-none"></textarea>
                   </div>
                   <div>
                     <input id="submit" name="submit" type="submit" value="Send Message" className="w-full bg-primeColor text-white p-3 rounded-lg cursor-pointer hover:bg-black" />
@@ -90,6 +91,9 @@ const Contact = () => {
     </div>
     <Footer />
   <FooterBottom />
+  <div className="block lg:hidden overflow-hidden mt-24">
+      <Navigation />
+      </div>
     </>
   );
 };
